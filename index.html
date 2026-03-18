@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EverData — Transformando Dados em Decisões</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050810;
+    --bg2: #080d1a;
+    --surface: #0d1428;
+    --surface2: #111b36;
+    --border: rgba(255,255,255,0.07);
+    --accent: #00e5ff;
+    --accent2: #7b61ff;
+    --accent3: #00ff9d;
+    --gold: #f5c842;
+    --text: #e8eef8;
+    --muted: #6b7a99;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 5vw;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(20px);
+    background: rgba(5,8,16,0.7);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--accent); }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  .nav-cta {
+    background: var(--accent);
+    color: #000 !important;
+    padding: 0.5rem 1.4rem;
+    border-radius: 100px;
+    font-weight: 700 !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+  }
+  .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,229,255,0.3) !important; color: #000 !important; }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 5vw 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    pointer-events: none;
+  }
+  .orb1 { width: 600px; height: 600px; background: rgba(0,229,255,0.08); top: -100px; left: -200px; animation: float1 8s ease-in-out infinite; }
+  .orb2 { width: 500px; height: 500px; background: rgba(123,97,255,0.1); bottom: -100px; right: -150px; animation: float2 10s ease-in-out infinite; }
+  .orb3 { width: 300px; height: 300px; background: rgba(0,255,157,0.06); top: 40%; left: 55%; animation: float3 7s ease-in-out infinite; }
+
+  @keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,40px)} }
+  @keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-40px,-30px)} }
+  @keyframes float3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-20px)} }
+
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(0,229,255,0.08);
+    border: 1px solid rgba(0,229,255,0.2);
+    padding: 0.35rem 1.2rem;
+    border-radius: 100px;
+    margin-bottom: 2rem;
+    display: inline-block;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(3rem, 7vw, 6rem);
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+  h1 .line2 { color: var(--text); }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: var(--muted);
+    max-width: 600px;
+    margin: 0 auto 2.5rem;
+    font-weight: 300;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+    padding: 0.85rem 2.2rem;
+    border-radius: 100px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,229,255,0.35); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    padding: 0.85rem 2.2rem;
+    border-radius: 100px;
+    font-weight: 500;
+    font-size: 1rem;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); background: rgba(0,229,255,0.05); }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    justify-content: center;
+    margin-top: 5rem;
+    flex-wrap: wrap;
+    animation: fadeUp 0.8s 0.4s ease both;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat-num {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .hero-stat-label { font-size: 0.85rem; color: var(--muted); margin-top: 0.3rem; }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    animation: fadeUp 1s 0.8s ease both;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+  /* ── SECTIONS ── */
+  section { padding: 100px 5vw; }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1.2rem;
+  }
+
+  .section-desc {
+    color: var(--muted);
+    max-width: 560px;
+    font-size: 1.05rem;
+    font-weight: 300;
+  }
+
+  /* ── MARQUEE ── */
+  .marquee-wrap {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .marquee-track {
+    display: inline-flex;
+    gap: 3rem;
+    animation: marquee 25s linear infinite;
+  }
+  .marquee-item {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .marquee-item span { color: var(--accent); font-size: 1.2em; }
+  @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  /* ── SERVICES ── */
+  #services { background: var(--bg); }
+
+  .services-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: end;
+    margin-bottom: 4rem;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .service-card {
+    background: var(--surface);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .service-card:hover { background: var(--surface2); }
+  .service-card:hover::before { opacity: 1; }
+
+  .service-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .service-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  .service-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.7; }
+
+  .service-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1.2rem;
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 100px;
+    background: rgba(0,229,255,0.07);
+    color: var(--accent);
+    border: 1px solid rgba(0,229,255,0.15);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── DASHBOARD SHOWCASE ── */
+  #showcase { background: var(--bg2); }
+  .showcase-header { text-align: center; margin-bottom: 4rem; }
+  .showcase-header .section-desc { margin: 0 auto; }
+
+  .showcase-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    background: var(--surface);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 0.55rem 1.4rem;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-body);
+  }
+  .tab-btn.active, .tab-btn:hover {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+
+  .showcase-frame {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.5);
+  }
+
+  .frame-topbar {
+    background: var(--bg);
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .frame-dots { display: flex; gap: 0.4rem; }
+  .frame-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+  .frame-url {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.3rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .dashboard-preview { padding: 1.5rem; }
+
+  /* ── MINI DASHBOARD ── */
+  .db-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .db-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; }
+  .db-badge {
+    background: rgba(0,255,157,0.1);
+    color: var(--accent3);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 0.2rem 0.7rem;
+    border-radius: 100px;
+    border: 1px solid rgba(0,255,157,0.2);
+  }
+
+  .db-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .kpi-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+  .kpi-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.08em; }
+  .kpi-value { font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; line-height: 1; }
+  .kpi-change {
+    font-size: 0.72rem;
+    margin-top: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+  }
+  .up { color: var(--accent3); }
+  .down { color: #ff6b6b; }
+
+  .db-charts {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .chart-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+  .chart-title { font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 80px;
+  }
+  .bar {
+    flex: 1;
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    transition: opacity 0.2s;
+  }
+  .bar:hover { opacity: 0.8; }
+
+  .line-chart-svg { width: 100%; height: 80px; }
+
+  .donut-wrap { display: flex; align-items: center; gap: 1rem; }
+  .donut-legend { display: flex; flex-direction: column; gap: 0.5rem; }
+  .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: var(--muted); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  .db-table {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .table-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    padding: 0.75rem 1.2rem;
+    background: var(--surface);
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border);
+  }
+  .table-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    padding: 0.75rem 1.2rem;
+    font-size: 0.82rem;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    transition: background 0.15s;
+  }
+  .table-row:last-child { border-bottom: none; }
+  .table-row:hover { background: var(--surface); }
+  .badge-status {
+    font-size: 0.68rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    font-family: var(--font-mono);
+    font-weight: 500;
+  }
+  .badge-ok { background: rgba(0,255,157,0.1); color: var(--accent3); }
+  .badge-warn { background: rgba(245,200,66,0.1); color: var(--gold); }
+
+  /* PANEL TABS */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── TECH STACK ── */
+  #stack { background: var(--bg); }
+  .stack-header { text-align: center; margin-bottom: 4rem; }
+  .stack-header .section-desc { margin: 0 auto; }
+
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .stack-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    cursor: default;
+  }
+  .stack-item:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0,229,255,0.3);
+    box-shadow: 0 12px 40px rgba(0,229,255,0.08);
+  }
+  .stack-item-icon { font-size: 2rem; margin-bottom: 0.6rem; }
+  .stack-item-name { font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.05em; }
+
+  /* ── PORTFOLIO ── */
+  #portfolio { background: var(--bg2); }
+
+  .portfolio-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: end;
+    margin-bottom: 3rem;
+  }
+
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .portfolio-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .portfolio-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+  }
+
+  .portfolio-thumb {
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+  }
+  .portfolio-card:hover .portfolio-thumb-inner { transform: scale(1.05); }
+  .portfolio-thumb-inner {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.4s ease;
+  }
+
+  .portfolio-info { padding: 1.5rem; }
+  .portfolio-category {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .portfolio-card h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; margin-bottom: 0.5rem; }
+  .portfolio-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+  /* ── PRICING ── */
+  #pricing { background: var(--bg); }
+  .pricing-header { text-align: center; margin-bottom: 4rem; }
+  .pricing-header .section-desc { margin: 0 auto; }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .pricing-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem;
+    position: relative;
+    transition: transform 0.2s;
+  }
+  .pricing-card:hover { transform: translateY(-4px); }
+  .pricing-card.featured {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, rgba(0,229,255,0.05), var(--surface));
+    box-shadow: 0 0 60px rgba(0,229,255,0.1);
+  }
+
+  .pricing-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.25rem 1rem;
+    border-radius: 100px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: var(--font-mono);
+    white-space: nowrap;
+  }
+
+  .pricing-name { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; }
+  .pricing-price {
+    font-family: var(--font-display);
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .pricing-price span { font-size: 1rem; font-weight: 400; color: var(--muted); }
+  .pricing-desc { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.8rem; }
+
+  .pricing-list { list-style: none; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 0.8rem; }
+  .pricing-list li {
+    font-size: 0.88rem;
+    color: var(--muted);
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+  }
+  .pricing-list li::before { content: '✓'; color: var(--accent3); font-weight: 700; flex-shrink: 0; }
+
+  .btn-plan {
+    width: 100%;
+    text-align: center;
+    padding: 0.85rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    display: block;
+    transition: all 0.2s;
+    font-family: var(--font-body);
+  }
+  .btn-plan-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-plan-outline:hover { border-color: var(--accent); background: rgba(0,229,255,0.05); }
+  .btn-plan-primary {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-plan-primary:hover { box-shadow: 0 8px 30px rgba(0,229,255,0.35); transform: translateY(-2px); }
+
+  /* ── CONTACT ── */
+  #contact { background: var(--bg2); }
+
+  .contact-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  .contact-info h2 { font-family: var(--font-display); font-size: 2.5rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1rem; }
+  .contact-info p { color: var(--muted); font-size: 1rem; line-height: 1.8; margin-bottom: 2rem; }
+
+  .contact-details { display: flex; flex-direction: column; gap: 1rem; }
+  .contact-detail {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.9rem;
+  }
+  .contact-detail-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .contact-detail a { color: var(--text); text-decoration: none; }
+  .contact-detail a:hover { color: var(--accent); }
+
+  .contact-form {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem;
+  }
+
+  .form-group { margin-bottom: 1.2rem; }
+  .form-label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-family: var(--font-mono);
+  }
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-textarea { resize: vertical; min-height: 120px; }
+  .form-select { appearance: none; cursor: pointer; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .btn-submit {
+    width: 100%;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 0.95rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-family: var(--font-body);
+    margin-top: 0.5rem;
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,229,255,0.35); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 3rem 5vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-brand {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.2rem;
+  }
+  .footer-brand span { color: var(--accent); }
+  .footer-copy { color: var(--muted); font-size: 0.85rem; }
+
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  .footer-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--accent); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .services-grid { grid-template-columns: 1fr 1fr; }
+    .services-header { grid-template-columns: 1fr; }
+    .db-kpis { grid-template-columns: repeat(2, 1fr); }
+    .db-charts { grid-template-columns: 1fr; }
+    .stack-grid { grid-template-columns: repeat(3, 1fr); }
+    .portfolio-grid { grid-template-columns: 1fr 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; max-width: 420px; }
+    .contact-wrap { grid-template-columns: 1fr; gap: 3rem; }
+    .nav-links { display: none; }
+    .portfolio-header { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 600px) {
+    .services-grid { grid-template-columns: 1fr; }
+    .stack-grid { grid-template-columns: repeat(3, 1fr); }
+    .portfolio-grid { grid-template-columns: 1fr; }
+    .hero-stats { gap: 1.5rem; }
+    .table-row, .table-header { grid-template-columns: 2fr 1fr 1fr; }
+    .table-row > *:last-child, .table-header > *:last-child { display: none; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Ever<span>Data</span></a>
+  <ul class="nav-links">
+    <li><a href="#services">Serviços</a></li>
+    <li><a href="#showcase">Dashboards</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#pricing">Planos</a></li>
+    <li><a href="#contact" class="nav-cta">Falar Agora</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-orb orb1"></div>
+  <div class="hero-orb orb2"></div>
+  <div class="hero-orb orb3"></div>
+
+  <div class="hero-eyebrow">⬡ Especialista em Dados & Tecnologia</div>
+
+  <h1>
+    Transformando <em>Dados</em><br>
+    <span class="line2">em Decisões Inteligentes</span>
+  </h1>
+
+  <p class="hero-sub">
+    Dashboards interativos, sistemas Python, análise de dados avançada e automações que elevam o nível do seu negócio.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#contact" class="btn-primary">
+      <span>Solicitar Projeto</span>
+      <span>→</span>
+    </a>
+    <a href="#showcase" class="btn-ghost">Ver Dashboards</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num">50+</div>
+      <div class="hero-stat-label">Projetos entregues</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">30+</div>
+      <div class="hero-stat-label">Clientes satisfeitos</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">5+</div>
+      <div class="hero-stat-label">Anos de experiência</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">100%</div>
+      <div class="hero-stat-label">Entrega no prazo</div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item"><span>◆</span> Python</div>
+    <div class="marquee-item"><span>◆</span> Power BI</div>
+    <div class="marquee-item"><span>◆</span> SQL</div>
+    <div class="marquee-item"><span>◆</span> Pandas</div>
+    <div class="marquee-item"><span>◆</span> Dashboards Web</div>
+    <div class="marquee-item"><span>◆</span> Excel Avançado</div>
+    <div class="marquee-item"><span>◆</span> Machine Learning</div>
+    <div class="marquee-item"><span>◆</span> Automações</div>
+    <div class="marquee-item"><span>◆</span> APIs REST</div>
+    <div class="marquee-item"><span>◆</span> Data Viz</div>
+    <div class="marquee-item"><span>◆</span> ETL</div>
+    <div class="marquee-item"><span>◆</span> Streamlit</div>
+    <!-- duplicate for infinite loop -->
+    <div class="marquee-item"><span>◆</span> Python</div>
+    <div class="marquee-item"><span>◆</span> Power BI</div>
+    <div class="marquee-item"><span>◆</span> SQL</div>
+    <div class="marquee-item"><span>◆</span> Pandas</div>
+    <div class="marquee-item"><span>◆</span> Dashboards Web</div>
+    <div class="marquee-item"><span>◆</span> Excel Avançado</div>
+    <div class="marquee-item"><span>◆</span> Machine Learning</div>
+    <div class="marquee-item"><span>◆</span> Automações</div>
+    <div class="marquee-item"><span>◆</span> APIs REST</div>
+    <div class="marquee-item"><span>◆</span> Data Viz</div>
+    <div class="marquee-item"><span>◆</span> ETL</div>
+    <div class="marquee-item"><span>◆</span> Streamlit</div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="services-header reveal">
+    <div>
+      <div class="section-label">// 01 — O que eu faço</div>
+      <h2 class="section-title">Serviços que<br>geram resultados</h2>
+    </div>
+    <p class="section-desc">
+      Cada projeto é único. Trabalho com foco em soluções que realmente funcionam, com dados confiáveis e visualizações que comunicam.
+    </p>
+  </div>
+
+  <div class="services-grid reveal">
+    <div class="service-card">
+      <div class="service-icon" style="background:rgba(0,229,255,0.1)">📊</div>
+      <h3>Dashboards Web</h3>
+      <p>Painéis interativos com Streamlit, Plotly, Dash ou HTML puro. Dados em tempo real com visual profissional.</p>
+      <div class="service-tags">
+        <span class="tag">Streamlit</span>
+        <span class="tag">Plotly</span>
+        <span class="tag">Chart.js</span>
+      </div>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon" style="background:rgba(123,97,255,0.1)">⚡</div>
+      <h3>Power BI</h3>
+      <p>Relatórios e dashboards corporativos no Power BI com DAX avançado, modelagem de dados e publicação em nuvem.</p>
+      <div class="service-tags">
+        <span class="tag">DAX</span>
+        <span class="tag">Power Query</span>
+        <span class="tag">M</span>
+      </div>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon" style="background:rgba(0,255,157,0.1)">🐍</div>
+      <h3>Sistemas Python</h3>
+      <p>Scripts e sistemas completos para automação, processamento de dados, APIs, bots e integrações empresariais.</p>
+      <div class="service-tags">
+        <span class="tag">FastAPI</span>
+        <span class="tag">Pandas</span>
+        <span class="tag">SQLAlchemy</span>
+      </div>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon" style="background:rgba(245,200,66,0.1)">📋</div>
+      <h3>Excel & Google Sheets</h3>
+      <p>Planilhas avançadas com VBA, fórmulas complexas, tabelas dinâmicas, automações e dashboards integrados.</p>
+      <div class="service-tags">
+        <span class="tag">VBA</span>
+        <span class="tag">Power Query</span>
+        <span class="tag">Apps Script</span>
+      </div>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon" style="background:rgba(0,229,255,0.1)">🧠</div>
+      <h3>Análise de Dados</h3>
+      <p>Extração de insights, limpeza de dados, análise estatística e relatórios executivos baseados em dados reais.</p>
+      <div class="service-tags">
+        <span class="tag">NumPy</span>
+        <span class="tag">Scikit-learn</span>
+        <span class="tag">SQL</span>
+      </div>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon" style="background:rgba(123,97,255,0.1)">🔄</div>
+      <h3>ETL & Integrações</h3>
+      <p>Pipelines de dados, integração entre sistemas, APIs e banco de dados, automatizando o fluxo de informações.</p>
+      <div class="service-tags">
+        <span class="tag">Airflow</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">REST APIs</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SHOWCASE -->
+<section id="showcase">
+  <div class="showcase-header reveal">
+    <div class="section-label">// 02 — Demonstração</div>
+    <h2 class="section-title">Dashboards ao vivo</h2>
+    <p class="section-desc">Exemplos reais de painéis que construo. Cada projeto é personalizado para a necessidade do cliente.</p>
+  </div>
+
+  <div class="showcase-tabs reveal">
+    <button class="tab-btn active" onclick="switchTab('vendas')">Vendas & Receita</button>
+    <button class="tab-btn" onclick="switchTab('financeiro')">Financeiro</button>
+    <button class="tab-btn" onclick="switchTab('operacional')">Operacional</button>
+  </div>
+
+  <div class="showcase-frame reveal">
+    <div class="frame-topbar">
+      <div class="frame-dots">
+        <div class="frame-dot dot-r"></div>
+        <div class="frame-dot dot-y"></div>
+        <div class="frame-dot dot-g"></div>
+      </div>
+      <div class="frame-url">everdata.app / dashboard / <span id="tab-name">vendas</span></div>
+    </div>
+    <div class="dashboard-preview">
+
+      <!-- VENDAS PANEL -->
+      <div id="panel-vendas" class="panel active">
+        <div class="db-header">
+          <div class="db-title">Dashboard de Vendas — 2024</div>
+          <div class="db-badge">● Ao vivo</div>
+        </div>
+        <div class="db-kpis">
+          <div class="kpi-card">
+            <div class="kpi-label">Receita Total</div>
+            <div class="kpi-value" style="color:var(--accent)">R$847K</div>
+            <div class="kpi-change up">▲ 18.4% vs mês ant.</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Novos Clientes</div>
+            <div class="kpi-value">243</div>
+            <div class="kpi-change up">▲ 12.1%</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Ticket Médio</div>
+            <div class="kpi-value" style="color:var(--accent2)">R$3,485</div>
+            <div class="kpi-change up">▲ 5.7%</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Conversão</div>
+            <div class="kpi-value" style="color:var(--accent3)">34.2%</div>
+            <div class="kpi-change down">▼ 1.2%</div>
+          </div>
+        </div>
+
+        <div class="db-charts">
+          <div class="chart-card">
+            <div class="chart-title">Receita Mensal (R$ mil)</div>
+            <div class="bar-chart">
+              <div class="bar" style="height:55%;background:linear-gradient(to top,rgba(0,229,255,0.4),rgba(0,229,255,0.8))"></div>
+              <div class="bar" style="height:68%;background:linear-gradient(to top,rgba(0,229,255,0.4),rgba(0,229,255,0.8))"></div>
+              <div class="bar" style="height:45%;background:linear-gradient(to top,rgba(0,229,255,0.4),rgba(0,229,255,0.8))"></div>
+              <div class="bar" style="height:80%;background:linear-gradient(to top,rgba(0,229,255,0.4),rgba(0,229,255,0.8))"></div>
+              <div class="bar" style="height:62%;background:linear-gradient(to top,rgba(0,229,255,0.4),rgba(0,229,255,0.8))"></div>
+              <div class="bar" style="height:75%;background:linear-gradient(to top,rgba(0,229,255,0.4),rgba(0,229,255,0.8))"></div>
+              <div class="bar" style="height:90%;background:linear-gradient(to top,rgba(0,229,255,0.6),var(--accent))"></div>
+              <div class="bar" style="height:70%;background:linear-gradient(to top,rgba(0,229,255,0.4),rgba(0,229,255,0.8))"></div>
+              <div class="bar" style="height:84%;background:linear-gradient(to top,rgba(0,229,255,0.4),rgba(0,229,255,0.8))"></div>
+              <div class="bar" style="height:95%;background:linear-gradient(to top,rgba(0,229,255,0.6),var(--accent))"></div>
+              <div class="bar" style="height:78%;background:linear-gradient(to top,rgba(0,229,255,0.4),rgba(0,229,255,0.8))"></div>
+              <div class="bar" style="height:100%;background:linear-gradient(to top,rgba(0,229,255,0.7),var(--accent))"></div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Por Canal</div>
+            <div class="donut-wrap">
+              <svg width="70" height="70" viewBox="0 0 70 70">
+                <circle cx="35" cy="35" r="28" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
+                <circle cx="35" cy="35" r="28" fill="none" stroke="var(--accent)" stroke-width="10" stroke-dasharray="70 106" stroke-dashoffset="-10" stroke-linecap="round"/>
+                <circle cx="35" cy="35" r="28" fill="none" stroke="var(--accent2)" stroke-width="10" stroke-dasharray="45 131" stroke-dashoffset="-80" stroke-linecap="round"/>
+                <circle cx="35" cy="35" r="28" fill="none" stroke="var(--accent3)" stroke-width="10" stroke-dasharray="41 135" stroke-dashoffset="-125" stroke-linecap="round"/>
+              </svg>
+              <div class="donut-legend">
+                <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Online 40%</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div>Direto 26%</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--accent3)"></div>Parceiros 34%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="db-table">
+          <div class="table-header">
+            <div>Produto</div><div>Qtd</div><div>Receita</div><div>Status</div>
+          </div>
+          <div class="table-row"><div>Licença Enterprise</div><div>48</div><div style="color:var(--accent3)">R$312K</div><div><span class="badge-status badge-ok">Ativo</span></div></div>
+          <div class="table-row"><div>Plano Professional</div><div>127</div><div style="color:var(--accent3)">R$254K</div><div><span class="badge-status badge-ok">Ativo</span></div></div>
+          <div class="table-row"><div>Suporte Premium</div><div>83</div><div style="color:var(--gold)">R$166K</div><div><span class="badge-status badge-warn">Revisar</span></div></div>
+          <div class="table-row"><div>Consultoria</div><div>31</div><div style="color:var(--accent3)">R$115K</div><div><span class="badge-status badge-ok">Ativo</span></div></div>
+        </div>
+      </div>
+
+      <!-- FINANCEIRO PANEL -->
+      <div id="panel-financeiro" class="panel">
+        <div class="db-header">
+          <div class="db-title">Dashboard Financeiro — Q4 2024</div>
+          <div class="db-badge">● Atualizado</div>
+        </div>
+        <div class="db-kpis">
+          <div class="kpi-card">
+            <div class="kpi-label">Lucro Líquido</div>
+            <div class="kpi-value" style="color:var(--accent3)">R$284K</div>
+            <div class="kpi-change up">▲ 22.3%</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Margem</div>
+            <div class="kpi-value" style="color:var(--accent)">33.5%</div>
+            <div class="kpi-change up">▲ 3.1pp</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Despesas</div>
+            <div class="kpi-value" style="color:#ff6b6b">R$563K</div>
+            <div class="kpi-change down">▼ 4.2%</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">ROI</div>
+            <div class="kpi-value" style="color:var(--gold)">184%</div>
+            <div class="kpi-change up">▲ 12%</div>
+          </div>
+        </div>
+        <div class="db-charts">
+          <div class="chart-card">
+            <div class="chart-title">Fluxo de Caixa (R$ mil)</div>
+            <svg class="line-chart-svg" viewBox="0 0 400 80">
+              <defs>
+                <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--accent3)" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="var(--accent3)" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path d="M0,70 L40,55 L80,60 L120,35 L160,40 L200,20 L240,30 L280,10 L320,18 L360,5 L400,2" fill="none" stroke="var(--accent3)" stroke-width="2"/>
+              <path d="M0,70 L40,55 L80,60 L120,35 L160,40 L200,20 L240,30 L280,10 L320,18 L360,5 L400,2 L400,80 L0,80Z" fill="url(#lineGrad)"/>
+            </svg>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Centros de Custo</div>
+            <div class="donut-wrap">
+              <svg width="70" height="70" viewBox="0 0 70 70">
+                <circle cx="35" cy="35" r="28" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
+                <circle cx="35" cy="35" r="28" fill="none" stroke="#ff6b6b" stroke-width="10" stroke-dasharray="60 116" stroke-dashoffset="-10"/>
+                <circle cx="35" cy="35" r="28" fill="none" stroke="var(--gold)" stroke-width="10" stroke-dasharray="50 126" stroke-dashoffset="-70"/>
+                <circle cx="35" cy="35" r="28" fill="none" stroke="var(--accent2)" stroke-width="10" stroke-dasharray="66 110" stroke-dashoffset="-120"/>
+              </svg>
+              <div class="donut-legend">
+                <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div>Pessoal 35%</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>Infra 29%</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div>Marketing 36%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="db-table">
+          <div class="table-header"><div>Centro de Custo</div><div>Orçado</div><div>Realizado</div><div>Variação</div></div>
+          <div class="table-row"><div>RH & Benefícios</div><div>R$195K</div><div style="color:var(--accent3)">R$188K</div><div><span class="badge-status badge-ok">-3.6%</span></div></div>
+          <div class="table-row"><div>Infra & Cloud</div><div>R$160K</div><div style="color:var(--gold)">R$174K</div><div><span class="badge-status badge-warn">+8.7%</span></div></div>
+          <div class="table-row"><div>Marketing Digital</div><div>R$200K</div><div style="color:var(--accent3)">R$201K</div><div><span class="badge-status badge-ok">+0.5%</span></div></div>
+        </div>
+      </div>
+
+      <!-- OPERACIONAL PANEL -->
+      <div id="panel-operacional" class="panel">
+        <div class="db-header">
+          <div class="db-title">Monitoramento Operacional</div>
+          <div class="db-badge">● Tempo Real</div>
+        </div>
+        <div class="db-kpis">
+          <div class="kpi-card">
+            <div class="kpi-label">Uptime Sistema</div>
+            <div class="kpi-value" style="color:var(--accent3)">99.8%</div>
+            <div class="kpi-change up">▲ Estável</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Tarefas Concluídas</div>
+            <div class="kpi-value" style="color:var(--accent)">1,847</div>
+            <div class="kpi-change up">▲ 9.4%</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Tempo Médio</div>
+            <div class="kpi-value" style="color:var(--gold)">2.4h</div>
+            <div class="kpi-change down">▼ 15min</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">SLA Atendido</div>
+            <div class="kpi-value" style="color:var(--accent3)">97.2%</div>
+            <div class="kpi-change up">▲ 1.8%</div>
+          </div>
+        </div>
+        <div class="db-charts">
+          <div class="chart-card">
+            <div class="chart-title">Volume de Processamento</div>
+            <div class="bar-chart">
+              <div class="bar" style="height:70%;background:linear-gradient(to top,rgba(123,97,255,0.4),var(--accent2))"></div>
+              <div class="bar" style="height:85%;background:linear-gradient(to top,rgba(123,97,255,0.4),var(--accent2))"></div>
+              <div class="bar" style="height:60%;background:linear-gradient(to top,rgba(123,97,255,0.4),var(--accent2))"></div>
+              <div class="bar" style="height:90%;background:linear-gradient(to top,rgba(123,97,255,0.5),var(--accent2))"></div>
+              <div class="bar" style="height:75%;background:linear-gradient(to top,rgba(123,97,255,0.4),var(--accent2))"></div>
+              <div class="bar" style="height:95%;background:linear-gradient(to top,rgba(123,97,255,0.5),var(--accent2))"></div>
+              <div class="bar" style="height:82%;background:linear-gradient(to top,rgba(123,97,255,0.4),var(--accent2))"></div>
+              <div class="bar" style="height:100%;background:linear-gradient(to top,rgba(123,97,255,0.6),var(--accent2))"></div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Status Geral</div>
+            <div class="donut-wrap">
+              <svg width="70" height="70" viewBox="0 0 70 70">
+                <circle cx="35" cy="35" r="28" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
+                <circle cx="35" cy="35" r="28" fill="none" stroke="var(--accent3)" stroke-width="10" stroke-dasharray="110 66" stroke-dashoffset="-10"/>
+                <circle cx="35" cy="35" r="28" fill="none" stroke="var(--gold)" stroke-width="10" stroke-dasharray="30 146" stroke-dashoffset="-120"/>
+                <circle cx="35" cy="35" r="28" fill="none" stroke="#ff6b6b" stroke-width="10" stroke-dasharray="36 140" stroke-dashoffset="-150"/>
+              </svg>
+              <div class="donut-legend">
+                <div class="legend-item"><div class="legend-dot" style="background:var(--accent3)"></div>Concluído 63%</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>Em andamento 17%</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div>Pendente 20%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="db-table">
+          <div class="table-header"><div>Processo</div><div>Execuções</div><div>Taxa Sucesso</div><div>Status</div></div>
+          <div class="table-row"><div>ETL Diário</div><div>1,204</div><div style="color:var(--accent3)">99.2%</div><div><span class="badge-status badge-ok">Normal</span></div></div>
+          <div class="table-row"><div>Sync API</div><div>38,450</div><div style="color:var(--accent3)">98.7%</div><div><span class="badge-status badge-ok">Normal</span></div></div>
+          <div class="table-row"><div>Backup DB</div><div>24</div><div style="color:var(--gold)">95.8%</div><div><span class="badge-status badge-warn">Verificar</span></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section id="stack">
+  <div class="stack-header reveal">
+    <div class="section-label">// 03 — Tecnologias</div>
+    <h2 class="section-title">Stack completo</h2>
+    <p class="section-desc">Domínio de todo o ecossistema de dados, do banco ao visual.</p>
+  </div>
+
+  <div class="stack-grid reveal">
+    <div class="stack-item"><div class="stack-item-icon">🐍</div><div class="stack-item-name">Python</div></div>
+    <div class="stack-item"><div class="stack-item-icon">📊</div><div class="stack-item-name">Power BI</div></div>
+    <div class="stack-item"><div class="stack-item-icon">🗄️</div><div class="stack-item-name">SQL</div></div>
+    <div class="stack-item"><div class="stack-item-icon">📋</div><div class="stack-item-name">Excel/VBA</div></div>
+    <div class="stack-item"><div class="stack-item-icon">🚀</div><div class="stack-item-name">FastAPI</div></div>
+    <div class="stack-item"><div class="stack-item-icon">📈</div><div class="stack-item-name">Plotly</div></div>
+    <div class="stack-item"><div class="stack-item-icon">🐼</div><div class="stack-item-name">Pandas</div></div>
+    <div class="stack-item"><div class="stack-item-icon">🌊</div><div class="stack-item-name">Streamlit</div></div>
+    <div class="stack-item"><div class="stack-item-icon">🔢</div><div class="stack-item-name">NumPy</div></div>
+    <div class="stack-item"><div class="stack-item-icon">🤖</div><div class="stack-item-name">Sklearn</div></div>
+    <div class="stack-item"><div class="stack-item-icon">🐘</div><div class="stack-item-name">PostgreSQL</div></div>
+    <div class="stack-item"><div class="stack-item-icon">☁️</div><div class="stack-item-name">Google Cloud</div></div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio">
+  <div class="portfolio-header reveal">
+    <div>
+      <div class="section-label">// 04 — Portfolio</div>
+      <h2 class="section-title">Projetos entregues</h2>
+    </div>
+    <p class="section-desc">Uma seleção de soluções que desenvolvei para clientes reais com resultados mensuráveis.</p>
+  </div>
+
+  <div class="portfolio-grid reveal">
+
+    <div class="portfolio-card">
+      <div class="portfolio-thumb">
+        <div class="portfolio-thumb-inner" style="background:linear-gradient(135deg,#0d1f3c,#0a3b5c);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;padding:1.5rem;">
+          <div style="display:flex;gap:0.5rem;align-items:flex-end">
+            <div style="width:18px;height:40px;background:rgba(0,229,255,0.7);border-radius:3px"></div>
+            <div style="width:18px;height:60px;background:var(--accent);border-radius:3px"></div>
+            <div style="width:18px;height:50px;background:rgba(0,229,255,0.7);border-radius:3px"></div>
+            <div style="width:18px;height:75px;background:var(--accent);border-radius:3px"></div>
+            <div style="width:18px;height:55px;background:rgba(0,229,255,0.7);border-radius:3px"></div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:0.65rem;color:rgba(0,229,255,0.6);letter-spacing:0.1em">VENDAS DASHBOARD</div>
+        </div>
+      </div>
+      <div class="portfolio-info">
+        <div class="portfolio-category">Power BI</div>
+        <h3>BI para Rede de Varejo</h3>
+        <p>Dashboard integrado com 12 lojas, análise de estoque, vendas por região e previsão de demanda com ML.</p>
+      </div>
+    </div>
+
+    <div class="portfolio-card">
+      <div class="portfolio-thumb">
+        <div class="portfolio-thumb-inner" style="background:linear-gradient(135deg,#0d1a2e,#1a0d3c);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.8rem;padding:1.5rem;">
+          <svg width="120" height="80" viewBox="0 0 120 80">
+            <path d="M0,70 L20,50 L40,55 L60,25 L80,30 L100,10 L120,5" fill="none" stroke="var(--accent2)" stroke-width="2.5"/>
+            <path d="M0,70 L20,50 L40,55 L60,25 L80,30 L100,10 L120,5 L120,80 L0,80Z" fill="rgba(123,97,255,0.15)"/>
+            <circle cx="60" cy="25" r="4" fill="var(--accent2)"/>
+            <circle cx="100" cy="10" r="4" fill="var(--accent2)"/>
+          </svg>
+          <div style="font-family:var(--font-mono);font-size:0.65rem;color:rgba(123,97,255,0.7);letter-spacing:0.1em">ANÁLISE FINANCEIRA</div>
+        </div>
+      </div>
+      <div class="portfolio-info">
+        <div class="portfolio-category">Python + Streamlit</div>
+        <h3>Análise Financeira Web</h3>
+        <p>Aplicação Streamlit com análise de carteira de investimentos, backtesting e alertas automáticos.</p>
+      </div>
+    </div>
+
+    <div class="portfolio-card">
+      <div class="portfolio-thumb">
+        <div class="portfolio-thumb-inner" style="background:linear-gradient(135deg,#0a1f15,#0d2e1a);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.8rem;padding:1.5rem;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;width:100%;max-width:160px;">
+            <div style="background:rgba(0,255,157,0.15);border:1px solid rgba(0,255,157,0.2);border-radius:6px;padding:0.5rem;text-align:center;">
+              <div style="font-family:var(--font-display);font-size:1rem;font-weight:800;color:var(--accent3)">47%</div>
+              <div style="font-size:0.55rem;color:var(--muted)">Eficiência</div>
+            </div>
+            <div style="background:rgba(0,255,157,0.15);border:1px solid rgba(0,255,157,0.2);border-radius:6px;padding:0.5rem;text-align:center;">
+              <div style="font-family:var(--font-display);font-size:1rem;font-weight:800;color:var(--accent3)">2.1k</div>
+              <div style="font-size:0.55rem;color:var(--muted)">Processos</div>
+            </div>
+            <div style="background:rgba(0,255,157,0.1);border:1px solid rgba(0,255,157,0.15);border-radius:6px;padding:0.5rem;text-align:center;grid-column:span 2">
+              <div style="font-family:var(--font-mono);font-size:0.65rem;color:rgba(0,255,157,0.6)">● AUTOMAÇÃO ATIVA</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="portfolio-info">
+        <div class="portfolio-category">Python + ETL</div>
+        <h3>Automação Industrial</h3>
+        <p>Pipeline de dados para indústria: coleta de sensores IoT, processamento em tempo real e alertas automáticos.</p>
+      </div>
+    </div>
+
+    <div class="portfolio-card">
+      <div class="portfolio-thumb">
+        <div class="portfolio-thumb-inner" style="background:linear-gradient(135deg,#1a1200,#2e2000);display:flex;align-items:center;justify-content:center;padding:1.5rem;">
+          <div style="width:100%;max-width:200px;">
+            <div style="background:rgba(245,200,66,0.05);border:1px solid rgba(245,200,66,0.2);border-radius:6px;overflow:hidden;">
+              <div style="background:rgba(245,200,66,0.15);padding:0.4rem 0.7rem;display:grid;grid-template-columns:2fr 1fr 1fr;gap:0.5rem;font-size:0.55rem;color:rgba(245,200,66,0.6);letter-spacing:0.06em;text-transform:uppercase;">
+                <span>Produto</span><span>Qtd</span><span>Total</span>
+              </div>
+              <div style="padding:0.35rem 0.7rem;display:grid;grid-template-columns:2fr 1fr 1fr;gap:0.5rem;font-size:0.6rem;border-bottom:1px solid rgba(245,200,66,0.1);color:var(--muted);">
+                <span>Item A</span><span>142</span><span style="color:var(--accent3)">R$8.5K</span>
+              </div>
+              <div style="padding:0.35rem 0.7rem;display:grid;grid-template-columns:2fr 1fr 1fr;gap:0.5rem;font-size:0.6rem;border-bottom:1px solid rgba(245,200,66,0.1);color:var(--muted);">
+                <span>Item B</span><span>89</span><span style="color:var(--accent3)">R$6.2K</span>
+              </div>
+              <div style="padding:0.35rem 0.7rem;display:grid;grid-template-columns:2fr 1fr 1fr;gap:0.5rem;font-size:0.6rem;color:var(--muted);">
+                <span>Item C</span><span>234</span><span style="color:var(--gold)">R$4.1K</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="portfolio-info">
+        <div class="portfolio-category">Excel Avançado</div>
+        <h3>Controle de Estoque</h3>
+        <p>Planilha avançada com macros VBA, dashboard integrado, alertas de reposição e relatórios automáticos.</p>
+      </div>
+    </div>
+
+    <div class="portfolio-card">
+      <div class="portfolio-thumb">
+        <div class="portfolio-thumb-inner" style="background:linear-gradient(135deg,#150d2e,#0d0d2e);display:flex;align-items:center;justify-content:center;padding:1.5rem;">
+          <div style="font-family:var(--font-mono);font-size:0.72rem;line-height:1.8;color:rgba(123,97,255,0.7);text-align:left;width:100%;max-width:220px;">
+            <span style="color:rgba(0,229,255,0.5)">import</span> pandas <span style="color:rgba(0,229,255,0.5)">as</span> pd<br>
+            <span style="color:rgba(0,229,255,0.5)">from</span> sklearn <span style="color:rgba(0,229,255,0.5)">import</span> model<br>
+            <br>
+            <span style="color:rgba(0,255,157,0.6)">df</span> = pd.read_csv(<span style="color:rgba(245,200,66,0.7)">'dados.csv'</span>)<br>
+            <span style="color:rgba(0,255,157,0.6)">resultado</span> = model.predict(<span style="color:rgba(0,255,157,0.6)">df</span>)<br>
+            <span style="color:var(--muted)">>>> Acurácia: 94.7%</span>
+          </div>
+        </div>
+      </div>
+      <div class="portfolio-info">
+        <div class="portfolio-category">Machine Learning</div>
+        <h3>Previsão de Demanda</h3>
+        <p>Modelo preditivo para e-commerce com 94% de acurácia, reduzindo estoque parado em 38%.</p>
+      </div>
+    </div>
+
+    <div class="portfolio-card">
+      <div class="portfolio-thumb">
+        <div class="portfolio-thumb-inner" style="background:linear-gradient(135deg,#0a1a2e,#0a2e2e);display:flex;align-items:center;justify-content:center;padding:1.5rem;">
+          <div style="display:flex;flex-direction:column;gap:0.6rem;width:100%;max-width:200px;">
+            <div style="height:6px;background:rgba(0,229,255,0.15);border-radius:3px;overflow:hidden;"><div style="height:100%;width:87%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:3px;"></div></div>
+            <div style="height:6px;background:rgba(0,229,255,0.15);border-radius:3px;overflow:hidden;"><div style="height:100%;width:62%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:3px;"></div></div>
+            <div style="height:6px;background:rgba(0,229,255,0.15);border-radius:3px;overflow:hidden;"><div style="height:100%;width:94%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:3px;"></div></div>
+            <div style="height:6px;background:rgba(0,229,255,0.15);border-radius:3px;overflow:hidden;"><div style="height:100%;width:45%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:3px;"></div></div>
+            <div style="margin-top:0.3rem;font-family:var(--font-mono);font-size:0.62rem;color:rgba(0,229,255,0.5);text-align:center;letter-spacing:0.1em;">RELATÓRIO EXECUTIVO</div>
+          </div>
+        </div>
+      </div>
+      <div class="portfolio-info">
+        <div class="portfolio-category">Power BI + SQL</div>
+        <h3>BI para RH Corporativo</h3>
+        <p>Painel de RH com KPIs de headcount, turnover, performance e análise salarial integrada ao ERP.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="pricing-header reveal">
+    <div class="section-label">// 05 — Investimento</div>
+    <h2 class="section-title">Planos & Serviços</h2>
+    <p class="section-desc">Transparência total. Escolha o modelo que melhor se encaixa no seu projeto.</p>
+  </div>
+
+  <div class="pricing-grid reveal">
+
+    <div class="pricing-card">
+      <div class="pricing-name">Starter</div>
+      <div class="pricing-price">R$500 <span>/ projeto</span></div>
+      <div class="pricing-desc">Ideal para análises pontuais e pequenas automações.</div>
+      <ul class="pricing-list">
+        <li>1 dashboard ou relatório</li>
+        <li>Análise de dados básica</li>
+        <li>Planilha avançada</li>
+        <li>Entrega em até 7 dias</li>
+        <li>1 revisão incluída</li>
+      </ul>
+      <a href="#contact" class="btn-plan btn-plan-outline">Solicitar</a>
+    </div>
+
+    <div class="pricing-card featured">
+      <div class="pricing-badge">Mais Popular</div>
+      <div class="pricing-name">Professional</div>
+      <div class="pricing-price">R$1.800 <span>/ projeto</span></div>
+      <div class="pricing-desc">Para projetos completos que geram impacto real no negócio.</div>
+      <ul class="pricing-list">
+        <li>Dashboard completo (web ou Power BI)</li>
+        <li>Sistema Python personalizado</li>
+        <li>Integração com banco de dados</li>
+        <li>ETL e pipeline de dados</li>
+        <li>Entrega em até 15 dias</li>
+        <li>3 revisões + suporte 30 dias</li>
+      </ul>
+      <a href="#contact" class="btn-plan btn-plan-primary">Solicitar Agora</a>
+    </div>
+
+    <div class="pricing-card">
+      <div class="pricing-name">Enterprise</div>
+      <div class="pricing-price">Custom <span>/ mês</span></div>
+      <div class="pricing-desc">Para empresas que precisam de parceria contínua em dados.</div>
+      <ul class="pricing-list">
+        <li>Projetos ilimitados por mês</li>
+        <li>Suporte e manutenção contínua</li>
+        <li>BI corporativo completo</li>
+        <li>Treinamento da equipe</li>
+        <li>SLA garantido</li>
+        <li>Reuniões semanais de acompanhamento</li>
+      </ul>
+      <a href="#contact" class="btn-plan btn-plan-outline">Falar com Everton</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-wrap">
+    <div class="contact-info reveal">
+      <div class="section-label">// 06 — Contato</div>
+      <h2>Vamos criar algo<br><em style="font-style:normal;color:var(--accent)">incrível juntos?</em></h2>
+      <p>Estou pronto para transformar seus dados em soluções visuais e estratégicas. Me conta o seu projeto e respondo em até 24 horas.</p>
+
+      <div class="contact-details">
+        <div class="contact-detail">
+          <div class="contact-detail-icon">📧</div>
+          <div>
+            <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.1rem">Email</div>
+            <a href="mailto:facofacil@gmail.com">facofacil@gmail.com</a>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">👤</div>
+          <div>
+            <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.1rem">Fundador</div>
+            <span>Everton Sacramento</span>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">📍</div>
+          <div>
+            <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.1rem">Localização</div>
+            <span>Brasil — Atendimento remoto nacional</span>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">⏱️</div>
+          <div>
+            <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.1rem">Resposta</div>
+            <span>Em até 24 horas úteis</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-form reveal">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nome</label>
+          <input type="text" class="form-input" placeholder="Seu nome">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" placeholder="seu@email.com">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Empresa (opcional)</label>
+        <input type="text" class="form-input" placeholder="Nome da empresa">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo de projeto</label>
+        <select class="form-select">
+          <option value="">Selecione...</option>
+          <option>Dashboard Web (Streamlit / Plotly)</option>
+          <option>Power BI</option>
+          <option>Sistema Python</option>
+          <option>Planilha Excel Avançada</option>
+          <option>Análise de Dados</option>
+          <option>ETL / Integração de dados</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descreva seu projeto</label>
+        <textarea class="form-textarea" placeholder="Conte sobre seu projeto, volume de dados, prazo desejado..."></textarea>
+      </div>
+      <button class="btn-submit" onclick="handleSubmit(this)">Enviar Mensagem →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-brand">Ever<span>Data</span></div>
+    <div class="footer-copy" style="margin-top:0.3rem">Everton Sacramento — Dados & Tecnologia</div>
+  </div>
+  <ul class="footer-links">
+    <li><a href="#services">Serviços</a></li>
+    <li><a href="#showcase">Dashboards</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="mailto:facofacil@gmail.com">Contato</a></li>
+  </ul>
+  <div class="footer-copy">© 2024 EverData. Todos os direitos reservados.</div>
+</footer>
+
+<script>
+  // TAB SWITCHING
+  function switchTab(tab) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+    document.getElementById('tab-name').textContent = tab;
+    event.target.classList.add('active');
+  }
+
+  // SCROLL REVEAL
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+
+  // FORM SUBMIT
+  function handleSubmit(btn) {
+    btn.textContent = 'Enviado com sucesso! ✓';
+    btn.style.background = 'var(--accent3)';
+    setTimeout(() => {
+      btn.textContent = 'Enviar Mensagem →';
+      btn.style.background = '';
+    }, 3000);
+  }
+
+  // COUNTER ANIMATION
+  function animateCounter(el, target, prefix='', suffix='') {
+    let start = 0;
+    const duration = 1500;
+    const step = target / (duration / 16);
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= target) {
+        el.textContent = prefix + target + suffix;
+        clearInterval(timer);
+      } else {
+        el.textContent = prefix + Math.floor(start) + suffix;
+      }
+    }, 16);
+  }
+
+  const heroObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      const nums = document.querySelectorAll('.hero-stat-num');
+      animateCounter(nums[0], 50, '', '+');
+      animateCounter(nums[1], 30, '', '+');
+      animateCounter(nums[2], 5, '', '+');
+      heroObserver.disconnect();
+    }
+  }, {threshold: 0.5});
+  heroObserver.observe(document.querySelector('.hero-stats'));
+</script>
+</body>
+</html>
