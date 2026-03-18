@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EverData — Everton Sacramento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ─────────────────────────────── */
+:root{
+  --bg:      #060608;
+  --bg2:     #0c0c10;
+  --bg3:     #12121a;
+  --bg4:     #1a1a24;
+  --border:  rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.035);
+  --text:    #eeeaf4;
+  --muted:   #5c576b;
+  --muted2:  #2e2b38;
+
+  --green:   #00ff87;
+  --green2:  #00cc6a;
+  --blue:    #4d9fff;
+  --pink:    #ff4d8f;
+  --yellow:  #ffe04d;
+  --orange:  #ff7b35;
+
+  --f-disp: 'Syne', sans-serif;
+  --f-body: 'DM Sans', sans-serif;
+  --f-mono: 'DM Mono', monospace;
+
+  --r: 10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--f-body);font-size:16px;line-height:1.6;overflow-x:hidden;cursor:none}
+
+/* ── CURSOR ─────────────────────────────── */
+#cur{width:8px;height:8px;background:var(--green);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .18s,height .18s;mix-blend-mode:screen}
+#cur2{width:32px;height:32px;border:1.5px solid rgba(0,255,135,.3);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .1s,top .1s,width .25s,height .25s}
+a:hover ~ #cur, button:hover ~ #cur{width:18px;height:18px}
+
+/* ── NAV ─────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:900;
+  height:62px;padding:0 3rem;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(6,6,8,.9);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border)
+}
+.logo{font-family:var(--f-disp);font-size:1.25rem;font-weight:800;letter-spacing:.05em;text-decoration:none;color:var(--text)}
+.logo em{color:var(--green);font-style:normal}
+.navlinks{list-style:none;display:flex;gap:2.5rem}
+.navlinks a{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.navlinks a:hover{color:var(--green)}
+.nav-btn{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;background:var(--green);color:#060608;padding:.5rem 1.4rem;border-radius:4px;text-decoration:none;font-weight:500;transition:opacity .2s,transform .15s}
+.nav-btn:hover{opacity:.88;transform:translateY(-1px)}
+
+/* ── HERO ────────────────────────────────── */
+#hero{
+  min-height:100vh;
+  padding:62px 3rem 0;
+  display:grid;
+  grid-template-rows:1fr auto;
+  position:relative;
+  overflow:hidden
+}
+
+/* animated grid bg */
+.grid-bg{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(0,255,135,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,135,.03) 1px, transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)
+}
+
+/* glow blobs */
+.glow1{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,135,.07) 0%,transparent 65%);top:-150px;right:-100px;pointer-events:none;animation:gb 10s ease-in-out infinite}
+.glow2{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(77,159,255,.06) 0%,transparent 65%);bottom:-100px;left:5%;pointer-events:none;animation:gb 13s ease-in-out infinite reverse}
+@keyframes gb{0%,100%{transform:scale(1) translate(0,0)}50%{transform:scale(1.15) translate(20px,-20px)}}
+
+.hero-inner{
+  display:grid;
+  grid-template-columns:1fr 480px;
+  gap:4rem;
+  align-items:center;
+  padding:5rem 0 3rem;
+  position:relative;z-index:2
+}
+
+/* LEFT */
+.hero-l{}
+.hero-label{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-family:var(--f-mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--green);margin-bottom:2.5rem;
+  opacity:0;animation:fadeUp .7s .1s ease forwards
+}
+.hero-label::before{content:'';width:20px;height:1px;background:var(--green)}
+
+h1{
+  font-family:var(--f-disp);
+  font-size:clamp(3.8rem,7.5vw,8rem);
+  font-weight:800;
+  line-height:.96;
+  letter-spacing:-.02em;
+  margin-bottom:2rem;
+  opacity:0;animation:fadeUp .8s .25s ease forwards
+}
+h1 .outline{
+  -webkit-text-stroke:1.5px rgba(238,234,244,.2);
+  color:transparent
+}
+h1 .hi{color:var(--green)}
+
+.hero-sub{
+  font-size:1.08rem;
+  font-weight:300;
+  color:var(--muted);
+  max-width:480px;
+  line-height:1.85;
+  margin-bottom:2.8rem;
+  opacity:0;animation:fadeUp .8s .4s ease forwards
+}
+.hero-sub strong{color:var(--text);font-weight:500}
+
+.hero-btns{display:flex;gap:.8rem;opacity:0;animation:fadeUp .8s .55s ease forwards}
+.btn-primary{
+  display:inline-block;text-decoration:none;
+  background:var(--green);color:#060608;
+  font-family:var(--f-disp);font-size:.85rem;font-weight:700;letter-spacing:.04em;
+  padding:.9rem 2.2rem;border-radius:5px;
+  transition:transform .2s,box-shadow .2s
+}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,255,135,.25)}
+.btn-ghost{
+  display:inline-block;text-decoration:none;
+  background:transparent;color:var(--muted);
+  font-family:var(--f-mono);font-size:.7rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;
+  padding:.9rem 1.8rem;border-radius:5px;border:1px solid var(--border);
+  transition:border-color .2s,color .2s
+}
+.btn-ghost:hover{border-color:var(--green);color:var(--green)}
+
+/* RIGHT — hero card */
+.hero-r{opacity:0;animation:fadeUp .8s .7s ease forwards}
+
+.hcard{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 40px 100px rgba(0,0,0,.5), 0 0 0 1px rgba(0,255,135,.04), inset 0 1px 0 rgba(255,255,255,.04)
+}
+.hcard-topbar{
+  background:var(--bg3);padding:.8rem 1.2rem;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:1rem
+}
+.trafdots{display:flex;gap:5px}
+.trd{width:9px;height:9px;border-radius:50%}
+.hcard-title{font-family:var(--f-mono);font-size:.6rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;flex:1;text-align:center}
+.live-dot{display:flex;align-items:center;gap:4px;font-family:var(--f-mono);font-size:.58rem;color:var(--green);letter-spacing:.08em}
+.live-dot::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+.hcard-body{padding:1.2rem}
+
+/* big KPI strip */
+.hkpi-strip{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1rem}
+.hkpi{
+  background:var(--bg3);border:1px solid var(--border2);border-radius:8px;
+  padding:1rem 1.1rem;
+  position:relative;overflow:hidden
+}
+.hkpi::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0
+}
+.hkpi.c1::before{background:var(--green)}
+.hkpi.c2::before{background:var(--blue)}
+.hkpi.c3::before{background:var(--yellow)}
+.hkpi.c4::before{background:var(--pink)}
+.hkpi-label{font-family:var(--f-mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+.hkpi-val{font-family:var(--f-disp);font-size:1.9rem;font-weight:700;line-height:1;letter-spacing:-.02em;margin-bottom:.35rem}
+.hkpi-delta{font-family:var(--f-mono);font-size:.57rem;display:flex;align-items:center;gap:.25rem}
+.pos{color:var(--green)}.neg{color:var(--pink)}
+
+/* sparkline in hero card */
+.hcard-chart{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:1rem;margin-bottom:.8rem}
+.hcc-header{font-family:var(--f-mono);font-size:.57rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:.8rem}
+.sparkbars{display:flex;align-items:flex-end;gap:4px;height:72px}
+.spkb{flex:1;border-radius:2px 2px 0 0;transition:opacity .2s}
+.spkb:hover{opacity:.7}
+
+.hcard-ranks{display:flex;flex-direction:column;gap:.45rem}
+.hrank{display:flex;align-items:center;gap:.7rem;font-size:.83rem}
+.hrank-name{color:var(--muted);width:90px;flex-shrink:0;font-weight:300}
+.hrank-track{flex:1;height:3px;background:var(--bg4);border-radius:2px}
+.hrank-fill{height:100%;border-radius:2px;background:var(--green)}
+.hrank-val{font-family:var(--f-mono);font-size:.65rem;color:var(--green);width:50px;text-align:right;flex-shrink:0}
+
+/* STATS STRIP */
+.hero-stats{
+  border-top:1px solid var(--border);
+  padding:2rem 0;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  position:relative;z-index:2;
+  opacity:0;animation:fadeUp .8s .9s ease forwards
+}
+.hstat{padding:0 2rem;border-right:1px solid var(--border)}
+.hstat:first-child{padding-left:0}.hstat:last-child{border-right:none}
+.hstat-n{font-family:var(--f-disp);font-size:3.5rem;font-weight:800;line-height:1;letter-spacing:-.03em}
+.hstat-n span{color:var(--green)}
+.hstat-l{font-family:var(--f-mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:.3rem}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── BAND ─────────────────────────────────── */
+.band{background:var(--green);overflow:hidden;white-space:nowrap;padding:.65rem 0}
+.band-track{display:inline-flex;animation:mq 28s linear infinite}
+.bi{font-family:var(--f-mono);font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:#060608;font-weight:500;padding:0 1.8rem;border-right:1px solid rgba(6,6,8,.18)}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── SECTION COMMON ───────────────────────── */
+.section{padding:8rem 3rem}
+.section-dark{background:var(--bg2)}
+.section-darker{background:var(--bg3)}
+
+.eyebrow{
+  font-family:var(--f-mono);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--green);display:flex;align-items:center;gap:.7rem;margin-bottom:1.4rem
+}
+.eyebrow::before{content:'';width:18px;height:1px;background:var(--green)}
+
+.sec-title{
+  font-family:var(--f-disp);
+  font-size:clamp(2.8rem,4.5vw,5rem);
+  font-weight:800;line-height:.96;letter-spacing:-.02em;
+  margin-bottom:1.4rem
+}
+.sec-desc{
+  font-size:1.05rem;font-weight:300;color:var(--muted);
+  max-width:460px;line-height:1.85
+}
+
+/* ── SERVICES ─────────────────────────────── */
+.srv-grid{display:grid;grid-template-columns:320px 1fr;gap:6rem;align-items:start}
+.srv-pin{position:sticky;top:100px}
+
+.srv-list{display:flex;flex-direction:column}
+.srv-row{
+  padding:2rem 0;
+  border-bottom:1px solid var(--border);
+  display:grid;grid-template-columns:36px 1fr 24px;gap:1.2rem;
+  align-items:start;cursor:default
+}
+.srv-row:first-child{border-top:1px solid var(--border)}
+.srv-row:hover .srv-num{color:var(--green)}
+.srv-row:hover .srv-chevron{opacity:1;transform:translateX(3px)}
+.srv-num{font-family:var(--f-mono);font-size:.6rem;color:var(--muted2);letter-spacing:.08em;padding-top:3px;transition:color .2s}
+.srv-content{}
+.srv-name{font-family:var(--f-disp);font-size:1.75rem;font-weight:700;letter-spacing:-.01em;line-height:1;margin-bottom:.6rem}
+.srv-desc{font-size:.93rem;color:var(--muted);line-height:1.8;font-weight:300;margin-bottom:.8rem}
+.srv-chips{display:flex;flex-wrap:wrap;gap:.35rem}
+.chip{font-family:var(--f-mono);font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .65rem;border:1px solid var(--border);border-radius:3px;color:var(--muted2)}
+.srv-chevron{font-size:1rem;color:var(--green);opacity:0;padding-top:3px;transition:opacity .2s,transform .2s}
+
+/* ── SHOWCASE ─────────────────────────────── */
+.sh-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2.5rem}
+.tab-group{display:flex;gap:.4rem}
+.tab-btn{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.5rem 1.2rem;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s}
+.tab-btn.active{background:var(--green);color:#060608;border-color:var(--green);font-weight:500}
+.tab-btn:hover:not(.active){border-color:var(--green);color:var(--green)}
+
+/* BIG DASHBOARD MOCKUP */
+.db-shell{
+  background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;
+  box-shadow:0 60px 120px rgba(0,0,0,.6)
+}
+.db-bar{
+  background:var(--bg3);padding:.8rem 1.3rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:1rem
+}
+.db-bar .trafdots{display:flex;gap:5px}
+.db-url{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:.25rem .8rem;font-family:var(--f-mono);font-size:.6rem;color:var(--muted);letter-spacing:.04em}
+.db-live{display:flex;align-items:center;gap:5px;font-family:var(--f-mono);font-size:.58rem;color:var(--green);letter-spacing:.08em;text-transform:uppercase}
+.db-live::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.4s infinite}
+
+.db-content{padding:1.4rem}
+.db-panel{display:none}.db-panel.active{display:block}
+
+/* KPIs — bigger! */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-bottom:1.1rem}
+.kpi-card{
+  background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
+  padding:1.3rem 1.4rem;position:relative;overflow:hidden
+}
+.kpi-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kpi-card.k1::after{background:var(--green)}
+.kpi-card.k2::after{background:var(--blue)}
+.kpi-card.k3::after{background:var(--yellow)}
+.kpi-card.k4::after{background:var(--pink)}
+.kpi-lbl{font-family:var(--f-mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.55rem}
+.kpi-num{
+  font-family:var(--f-disp);font-size:2.6rem;font-weight:700;
+  line-height:1;letter-spacing:-.03em;margin-bottom:.4rem
+}
+.kpi-chg{font-family:var(--f-mono);font-size:.6rem;display:flex;align-items:center;gap:.3rem}
+
+/* charts row */
+.charts-row{display:grid;grid-template-columns:1.9fr 1fr 1fr;gap:.9rem;margin-bottom:.9rem}
+.chart-card{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:1.2rem}
+.chart-title{font-family:var(--f-mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center}
+
+/* column chart — TALL */
+.col-bars{display:flex;align-items:flex-end;gap:6px;height:110px}
+.cbar{flex:1;border-radius:3px 3px 0 0;min-width:0;transition:opacity .2s}
+.cbar:hover{opacity:.7}
+
+/* line chart */
+.linechart{width:100%;height:110px;overflow:visible}
+
+/* donut */
+.donut-wrap{display:flex;align-items:center;gap:1rem}
+.donut-svg{width:88px;height:88px;flex-shrink:0}
+.donut-legend{display:flex;flex-direction:column;gap:.55rem;flex:1}
+.dl-item{display:flex;align-items:center;gap:.5rem;font-size:.8rem}
+.dl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dl-label{color:var(--muted);font-weight:300}
+.dl-pct{font-family:var(--f-mono);font-size:.62rem;margin-left:auto}
+
+/* gauge */
+.gauge-inner{display:flex;flex-direction:column;align-items:center;gap:.4rem}
+.gauge-svg{width:110px;height:64px}
+.gauge-num{font-family:var(--f-disp);font-size:2rem;font-weight:700;line-height:1;letter-spacing:-.02em}
+.gauge-lbl{font-family:var(--f-mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* table */
+.db-table{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;overflow:hidden}
+.dbt-head{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 90px;padding:.65rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--border2);font-family:var(--f-mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.dbt-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 90px;padding:.75rem 1.2rem;border-bottom:1px solid var(--border2);align-items:center;font-size:.88rem;transition:background .15s}
+.dbt-row:last-child{border-bottom:none}
+.dbt-row:hover{background:rgba(255,255,255,.015)}
+.td-name{font-weight:400}.td-num{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}.td-val{font-family:var(--f-mono);font-size:.72rem;color:var(--green)}
+.badge{font-family:var(--f-mono);font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;padding:.18rem .6rem;border-radius:3px;display:inline-block}
+.badge-g{background:rgba(0,255,135,.1);color:var(--green)}
+.badge-y{background:rgba(255,224,77,.1);color:var(--yellow)}
+.badge-r{background:rgba(255,77,143,.1);color:var(--pink)}
+
+/* ── STACK ───────────────────────────────── */
+.stack-wrap{display:grid;grid-template-columns:360px 1fr;gap:6rem;align-items:center}
+.tech-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.tech-cell{background:var(--bg2);padding:1.8rem 1rem;text-align:center;transition:background .2s;cursor:default}
+.tech-cell:hover{background:var(--bg3)}
+.tech-icon{font-size:2rem;display:block;margin-bottom:.55rem}
+.tech-name{font-family:var(--f-mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tech-cell:hover .tech-name{color:var(--green)}
+
+/* ── PORTFOLIO ───────────────────────────── */
+.port-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:4rem}
+.port-card{background:var(--bg2);overflow:hidden;position:relative;transition:background .3s}
+.port-card:hover{background:var(--bg3)}
+.port-card:hover .port-thumb{transform:scale(1.04)}
+.port-card:hover .port-link{opacity:1;transform:translate(0,0)}
+.port-thumb{height:210px;transition:transform .5s ease;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.port-meta{padding:1.4rem;border-top:1px solid var(--border2)}
+.port-cat{font-family:var(--f-mono);font-size:.57rem;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:.45rem}
+.port-name{font-family:var(--f-disp);font-size:1.25rem;font-weight:700;letter-spacing:-.01em;margin-bottom:.35rem}
+.port-desc{font-size:.85rem;color:var(--muted);font-weight:300;line-height:1.7}
+.port-link{position:absolute;top:1.1rem;right:1.1rem;width:30px;height:30px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#060608;font-size:.8rem;opacity:0;transform:translate(4px,-4px);transition:all .22s}
+
+/* ── ABOUT ───────────────────────────────── */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center}
+.about-frame{
+  aspect-ratio:3/4;max-width:380px;
+  background:var(--bg3);border-radius:12px;border:1px solid var(--border);
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center
+}
+.af-letters{
+  font-family:var(--f-disp);font-size:18rem;font-weight:800;
+  color:rgba(0,255,135,.05);line-height:1;user-select:none;letter-spacing:-.05em
+}
+.af-tr{position:absolute;top:1.5rem;right:1.5rem;width:44px;height:44px;border-top:2px solid var(--green);border-right:2px solid var(--green)}
+.af-bl{position:absolute;bottom:1.5rem;left:1.5rem;width:44px;height:44px;border-bottom:2px solid var(--green);border-left:2px solid var(--green)}
+.af-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,8,.9) 0%,transparent 50%)}
+.af-caption{position:absolute;bottom:2rem;left:2rem;z-index:2}
+.af-name{font-family:var(--f-disp);font-size:1.9rem;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.af-role{font-family:var(--f-mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-top:.4rem}
+
+.about-text p{font-size:1.05rem;font-weight:300;color:var(--muted);line-height:1.9;margin-bottom:1.1rem}
+.about-text p strong{color:var(--text);font-weight:500}
+.ab-skills{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:2rem}
+.ab-skill{display:flex;align-items:center;gap:.65rem;font-size:.9rem;font-weight:400}
+.ab-skill::before{content:'';width:18px;height:1px;background:var(--green);flex-shrink:0}
+
+/* ── PRICING ─────────────────────────────── */
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:4rem}
+.price-col{background:var(--bg2);padding:2.6rem;position:relative;transition:background .2s}
+.price-col.featured{background:var(--bg3);border-top:2px solid var(--green)}
+.price-col:not(.featured):hover{background:var(--bg3)}
+.feat-tag{position:absolute;top:0;right:2.6rem;background:var(--green);color:#060608;font-family:var(--f-mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;padding:.28rem .75rem;border-radius:0 0 4px 4px}
+.plan-tier{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:1.4rem}
+.plan-price{font-family:var(--f-disp);font-size:4.2rem;font-weight:800;line-height:1;letter-spacing:-.04em;margin-bottom:.25rem}
+.plan-price sup{font-size:1.4rem;vertical-align:super;color:var(--muted);font-weight:400}
+.plan-freq{font-family:var(--f-mono);font-size:.6rem;color:var(--muted);letter-spacing:.08em;margin-bottom:2rem}
+.plan-divider{height:1px;background:var(--border);margin-bottom:2rem}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:.85rem;margin-bottom:2.5rem}
+.plan-features li{display:flex;align-items:flex-start;gap:.75rem;font-size:.93rem;color:var(--muted);font-weight:300}
+.plan-features li::before{content:'–';color:var(--green);flex-shrink:0}
+.plan-features li strong{color:var(--text);font-weight:500}
+.plan-cta{display:block;text-align:center;padding:.9rem;font-family:var(--f-disp);font-size:.85rem;font-weight:700;letter-spacing:.02em;text-decoration:none;border-radius:5px;transition:all .2s}
+.plan-cta-main{background:var(--green);color:#060608}.plan-cta-main:hover{opacity:.85}
+.plan-cta-out{background:transparent;color:var(--muted);border:1px solid var(--border)}.plan-cta-out:hover{border-color:var(--green);color:var(--green)}
+
+/* ── CONTACT ─────────────────────────────── */
+.contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start}
+.contact-left p{font-size:1.05rem;font-weight:300;color:var(--muted);line-height:1.9;margin-bottom:2.5rem}
+.ct-details{display:flex;flex-direction:column;gap:.9rem}
+.ct-item{display:flex;align-items:center;gap:1rem;padding-bottom:.9rem;border-bottom:1px solid var(--border2)}
+.ct-item:last-child{border-bottom:none}
+.ct-icon{width:38px;height:38px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+.ct-label{font-family:var(--f-mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.1rem}
+.ct-val{font-size:.9rem}.ct-val a{color:var(--text);text-decoration:none;transition:color .2s}.ct-val a:hover{color:var(--green)}
+
+.cform{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:2.4rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.9rem}
+.form-group{margin-bottom:.9rem}
+.form-label{display:block;font-family:var(--f-mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+.form-input,.form-select,.form-textarea{
+  width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:6px;
+  padding:.75rem 1rem;color:var(--text);font-family:var(--f-body);font-size:.95rem;
+  outline:none;transition:border-color .2s;-webkit-appearance:none
+}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--muted2);font-style:normal}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--green)}
+.form-textarea{resize:vertical;min-height:120px}
+.form-select{cursor:pointer}
+.form-submit{
+  width:100%;background:var(--green);color:#060608;border:none;
+  padding:1rem;border-radius:6px;
+  font-family:var(--f-disp);font-size:.9rem;font-weight:700;letter-spacing:.02em;
+  cursor:pointer;transition:opacity .2s,transform .2s;margin-top:.4rem
+}
+.form-submit:hover{opacity:.85;transform:translateY(-2px)}
+
+/* ── FOOTER ──────────────────────────────── */
+footer{background:var(--bg);border-top:1px solid var(--border);padding:2.2rem 3rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.foot-logo{font-family:var(--f-disp);font-size:1.2rem;font-weight:800;letter-spacing:.04em}
+.foot-logo em{color:var(--green);font-style:normal}
+.foot-nav{list-style:none;display:flex;gap:2rem}
+.foot-nav a{font-family:var(--f-mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.foot-nav a:hover{color:var(--green)}
+.foot-copy{font-family:var(--f-mono);font-size:.58rem;color:var(--muted2);letter-spacing:.06em}
+
+/* ── REVEAL ──────────────────────────────── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .75s ease,transform .75s ease}
+.reveal.in{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+
+/* ── RESPONSIVE ──────────────────────────── */
+@media(max-width:1080px){
+  .hero-inner{grid-template-columns:1fr}.hero-r{display:none}
+  .srv-grid{grid-template-columns:1fr;gap:3rem}.srv-pin{position:static}
+  .about-grid{grid-template-columns:1fr;gap:3rem}
+  .stack-wrap{grid-template-columns:1fr;gap:3rem}
+}
+@media(max-width:780px){
+  nav{padding:0 1.5rem}.navlinks{display:none}
+  .section{padding:5rem 1.5rem}
+  #hero{padding:62px 1.5rem 0}
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .charts-row{grid-template-columns:1fr}
+  .dbt-head,.dbt-row{grid-template-columns:2fr 1fr 1fr}
+  .dbt-head>*:nth-child(4),.dbt-row>*:nth-child(4),.dbt-head>*:last-child,.dbt-row>*:last-child{display:none}
+  .port-grid{grid-template-columns:1fr 1fr}
+  .price-grid{grid-template-columns:1fr}
+  .contact-wrap{grid-template-columns:1fr;gap:3rem}
+  .tech-grid{grid-template-columns:repeat(3,1fr)}
+  footer{flex-direction:column;text-align:center}
+}
+@media(max-width:480px){
+  .port-grid{grid-template-columns:1fr}
+  h1{font-size:3.4rem}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur2"></div>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <a href="#" class="logo">Ever<em>Data</em></a>
+  <ul class="navlinks">
+    <li><a href="#services">Serviços</a></li>
+    <li><a href="#showcase">Demos</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#about">Sobre</a></li>
+  </ul>
+  <a href="#contact" class="nav-btn">Contato</a>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <div class="grid-bg"></div>
+  <div class="glow1"></div>
+  <div class="glow2"></div>
+
+  <div class="hero-inner">
+    <div class="hero-l">
+      <div class="hero-label">Programação · Dados · Visualização</div>
+      <h1>
+        TRANS<span class="hi">FOR</span>MANDO<br>
+        <span class="outline">DADOS</span> EM<br>
+        DECISÕES
+      </h1>
+      <p class="hero-sub">
+        Dashboards que <strong>revelam o que importa</strong>, sistemas que automatizam o repetitivo, análises que fundamentam cada decisão estratégica do seu negócio.
+      </p>
+      <div class="hero-btns">
+        <a href="#contact" class="btn-primary">Iniciar Projeto</a>
+        <a href="#showcase" class="btn-ghost">Ver demos →</a>
+      </div>
+    </div>
+
+    <div class="hero-r">
+      <div class="hcard">
+        <div class="hcard-topbar">
+          <div class="trafdots">
+            <div class="trd" style="background:#ff5f57"></div>
+            <div class="trd" style="background:#febc2e"></div>
+            <div class="trd" style="background:#28c840"></div>
+          </div>
+          <div class="hcard-title">everdata.app / live</div>
+          <div class="live-dot">Live</div>
+        </div>
+        <div class="hcard-body">
+          <div class="hkpi-strip">
+            <div class="hkpi c1"><div class="hkpi-label">Receita</div><div class="hkpi-val" style="color:var(--green)">R$847K</div><div class="hkpi-delta pos">↑ 18.4%</div></div>
+            <div class="hkpi c2"><div class="hkpi-label">Clientes</div><div class="hkpi-val" style="color:var(--blue)">243</div><div class="hkpi-delta pos">↑ 12.1%</div></div>
+            <div class="hkpi c3"><div class="hkpi-label">Ticket Médio</div><div class="hkpi-val" style="color:var(--yellow)">R$3.4K</div><div class="hkpi-delta pos">↑ 5.7%</div></div>
+            <div class="hkpi c4"><div class="hkpi-label">Conversão</div><div class="hkpi-val" style="color:var(--pink)">34%</div><div class="hkpi-delta neg">↓ 1.2%</div></div>
+          </div>
+          <div class="hcard-chart">
+            <div class="hcc-header"><span>Receita Mensal</span><span style="color:var(--green)">R$ mil</span></div>
+            <div class="sparkbars">
+              <div class="spkb" style="height:52%;background:rgba(0,255,135,.25)"></div>
+              <div class="spkb" style="height:67%;background:rgba(0,255,135,.3)"></div>
+              <div class="spkb" style="height:45%;background:rgba(0,255,135,.24)"></div>
+              <div class="spkb" style="height:80%;background:rgba(0,255,135,.36)"></div>
+              <div class="spkb" style="height:61%;background:rgba(0,255,135,.28)"></div>
+              <div class="spkb" style="height:74%;background:rgba(0,255,135,.33)"></div>
+              <div class="spkb" style="height:89%;background:rgba(0,255,135,.42)"></div>
+              <div class="spkb" style="height:70%;background:rgba(0,255,135,.31)"></div>
+              <div class="spkb" style="height:83%;background:rgba(0,255,135,.38)"></div>
+              <div class="spkb" style="height:95%;background:rgba(0,255,135,.48)"></div>
+              <div class="spkb" style="height:78%;background:rgba(0,255,135,.35)"></div>
+              <div class="spkb" style="height:100%;background:var(--green)"></div>
+            </div>
+          </div>
+          <div class="hcard-ranks">
+            <div class="hrank"><span class="hrank-name">Enterprise</span><div class="hrank-track"><div class="hrank-fill" style="width:74%"></div></div><span class="hrank-val">R$312K</span></div>
+            <div class="hrank"><span class="hrank-name">Professional</span><div class="hrank-track"><div class="hrank-fill" style="width:58%"></div></div><span class="hrank-val">R$254K</span></div>
+            <div class="hrank"><span class="hrank-name">Starter</span><div class="hrank-track"><div class="hrank-fill" style="width:38%"></div></div><span class="hrank-val">R$166K</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hstat"><div class="hstat-n">50<span>+</span></div><div class="hstat-l">Projetos entregues</div></div>
+    <div class="hstat"><div class="hstat-n">30<span>+</span></div><div class="hstat-l">Clientes satisfeitos</div></div>
+    <div class="hstat"><div class="hstat-n">5<span>+</span></div><div class="hstat-l">Anos de experiência</div></div>
+    <div class="hstat"><div class="hstat-n">100<span>%</span></div><div class="hstat-l">Prazo cumprido</div></div>
+  </div>
+</section>
+
+<!-- BAND -->
+<div class="band">
+  <div class="band-track">
+    <span class="bi">Python</span><span class="bi">Power BI</span><span class="bi">Dashboards Web</span><span class="bi">SQL</span><span class="bi">Pandas</span><span class="bi">Excel Avançado</span><span class="bi">Machine Learning</span><span class="bi">Streamlit</span><span class="bi">FastAPI</span><span class="bi">Análise de Dados</span><span class="bi">ETL</span><span class="bi">Data Viz</span><span class="bi">Automações</span><span class="bi">VBA</span>
+    <span class="bi">Python</span><span class="bi">Power BI</span><span class="bi">Dashboards Web</span><span class="bi">SQL</span><span class="bi">Pandas</span><span class="bi">Excel Avançado</span><span class="bi">Machine Learning</span><span class="bi">Streamlit</span><span class="bi">FastAPI</span><span class="bi">Análise de Dados</span><span class="bi">ETL</span><span class="bi">Data Viz</span><span class="bi">Automações</span><span class="bi">VBA</span>
+  </div>
+</div>
+
+<!-- ═══ SERVICES ═══ -->
+<section id="services" class="section section-dark">
+  <div class="srv-grid">
+    <div class="srv-pin reveal">
+      <div class="eyebrow">01 — Serviços</div>
+      <h2 class="sec-title">O QUE EU ENTREGO</h2>
+      <p class="sec-desc">Soluções que transformam dados brutos em vantagem competitiva real e mensurável.</p>
+    </div>
+    <div class="srv-list">
+      <div class="srv-row reveal d1">
+        <div class="srv-num">01</div>
+        <div class="srv-content">
+          <div class="srv-name">Dashboards Web</div>
+          <div class="srv-desc">Painéis interativos com atualização em tempo real, filtros dinâmicos e visualizações que comunicam exatamente o que os dados revelam.</div>
+          <div class="srv-chips"><span class="chip">Streamlit</span><span class="chip">Plotly</span><span class="chip">Dash</span><span class="chip">Chart.js</span><span class="chip">D3.js</span></div>
+        </div>
+        <div class="srv-chevron">→</div>
+      </div>
+      <div class="srv-row reveal d2">
+        <div class="srv-num">02</div>
+        <div class="srv-content">
+          <div class="srv-name">Power BI</div>
+          <div class="srv-desc">Relatórios corporativos com DAX avançado, modelagem dimensional e publicação em nuvem com integração a múltiplas fontes.</div>
+          <div class="srv-chips"><span class="chip">DAX</span><span class="chip">Power Query</span><span class="chip">M Language</span><span class="chip">Gateway</span></div>
+        </div>
+        <div class="srv-chevron">→</div>
+      </div>
+      <div class="srv-row reveal d1">
+        <div class="srv-num">03</div>
+        <div class="srv-content">
+          <div class="srv-name">Sistemas Python</div>
+          <div class="srv-desc">APIs, automações, bots e sistemas completos. Do script ao produto funcional rodando em produção com robustez e escalabilidade.</div>
+          <div class="srv-chips"><span class="chip">FastAPI</span><span class="chip">SQLAlchemy</span><span class="chip">Pandas</span><span class="chip">Selenium</span><span class="chip">Celery</span></div>
+        </div>
+        <div class="srv-chevron">→</div>
+      </div>
+      <div class="srv-row reveal d2">
+        <div class="srv-num">04</div>
+        <div class="srv-content">
+          <div class="srv-name">Excel & Google Sheets</div>
+          <div class="srv-desc">Planilhas avançadas com VBA, tabelas dinâmicas, dashboards integrados e automações que eliminam trabalho manual repetitivo.</div>
+          <div class="srv-chips"><span class="chip">VBA</span><span class="chip">Power Query</span><span class="chip">Apps Script</span><span class="chip">Macros</span></div>
+        </div>
+        <div class="srv-chevron">→</div>
+      </div>
+      <div class="srv-row reveal d1">
+        <div class="srv-num">05</div>
+        <div class="srv-content">
+          <div class="srv-name">Análise & Ciência de Dados</div>
+          <div class="srv-desc">Extração de insights, modelagem preditiva, análise estatística e relatórios executivos baseados em evidências sólidas.</div>
+          <div class="srv-chips"><span class="chip">NumPy</span><span class="chip">Scikit-learn</span><span class="chip">SQL</span><span class="chip">Statsmodels</span></div>
+        </div>
+        <div class="srv-chevron">→</div>
+      </div>
+      <div class="srv-row reveal d2">
+        <div class="srv-num">06</div>
+        <div class="srv-content">
+          <div class="srv-name">ETL & Integrações</div>
+          <div class="srv-desc">Pipelines de dados, integração entre sistemas, APIs e bancos. Dados fluindo onde precisam, quando precisam.</div>
+          <div class="srv-chips"><span class="chip">PostgreSQL</span><span class="chip">REST APIs</span><span class="chip">Airflow</span><span class="chip">Webhooks</span></div>
+        </div>
+        <div class="srv-chevron">→</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SHOWCASE ═══ -->
+<section id="showcase" class="section">
+  <div class="sh-header reveal">
+    <div>
+      <div class="eyebrow">02 — Demonstração</div>
+      <h2 class="sec-title">DASHBOARDS AO VIVO</h2>
+    </div>
+    <div class="tab-group">
+      <button class="tab-btn active" onclick="switchTab(this,'v')">Vendas</button>
+      <button class="tab-btn" onclick="switchTab(this,'f')">Financeiro</button>
+      <button class="tab-btn" onclick="switchTab(this,'o')">Operacional</button>
+    </div>
+  </div>
+
+  <div class="db-shell reveal d1">
+    <div class="db-bar">
+      <div class="trafdots">
+        <div class="trd" style="background:#ff5f57"></div>
+        <div class="trd" style="background:#febc2e"></div>
+        <div class="trd" style="background:#28c840"></div>
+      </div>
+      <div class="db-url">everdata.app / dashboard / <span id="tab-label">vendas</span></div>
+      <div class="db-live">Ao Vivo</div>
+    </div>
+    <div class="db-content">
+
+      <!-- VENDAS -->
+      <div id="pv" class="db-panel active">
+        <div class="kpi-row">
+          <div class="kpi-card k1"><div class="kpi-lbl">Receita Total</div><div class="kpi-num" style="color:var(--green)">R$847K</div><div class="kpi-chg pos">↑ 18.4% vs mês anterior</div></div>
+          <div class="kpi-card k2"><div class="kpi-lbl">Novos Clientes</div><div class="kpi-num" style="color:var(--blue)">243</div><div class="kpi-chg pos">↑ 12.1%</div></div>
+          <div class="kpi-card k3"><div class="kpi-lbl">Ticket Médio</div><div class="kpi-num" style="color:var(--yellow)">R$3.485</div><div class="kpi-chg pos">↑ 5.7%</div></div>
+          <div class="kpi-card k4"><div class="kpi-lbl">Conversão</div><div class="kpi-num" style="color:var(--pink)">34.2%</div><div class="kpi-chg neg">↓ 1.2 pp</div></div>
+        </div>
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-title"><span>Receita Mensal (R$ mil)</span><span style="color:var(--green)">2024</span></div>
+            <div class="col-bars">
+              <div class="cbar" style="height:52%;background:rgba(0,255,135,.22)"></div>
+              <div class="cbar" style="height:66%;background:rgba(0,255,135,.28)"></div>
+              <div class="cbar" style="height:44%;background:rgba(0,255,135,.2)"></div>
+              <div class="cbar" style="height:79%;background:rgba(0,255,135,.34)"></div>
+              <div class="cbar" style="height:62%;background:rgba(0,255,135,.26)"></div>
+              <div class="cbar" style="height:74%;background:rgba(0,255,135,.31)"></div>
+              <div class="cbar" style="height:89%;background:rgba(0,255,135,.42)"></div>
+              <div class="cbar" style="height:70%;background:rgba(0,255,135,.29)"></div>
+              <div class="cbar" style="height:83%;background:rgba(0,255,135,.37)"></div>
+              <div class="cbar" style="height:94%;background:rgba(0,255,135,.47)"></div>
+              <div class="cbar" style="height:77%;background:rgba(0,255,135,.32)"></div>
+              <div class="cbar" style="height:100%;background:var(--green)"></div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title"><span>Por Canal</span></div>
+            <div class="donut-wrap">
+              <svg class="donut-svg" viewBox="0 0 88 88">
+                <circle cx="44" cy="44" r="33" fill="none" stroke="rgba(255,255,255,.04)" stroke-width="13"/>
+                <circle cx="44" cy="44" r="33" fill="none" stroke="var(--green)" stroke-width="13" stroke-dasharray="83 124" stroke-dashoffset="-14" stroke-linecap="round"/>
+                <circle cx="44" cy="44" r="33" fill="none" stroke="var(--blue)" stroke-width="13" stroke-dasharray="54 153" stroke-dashoffset="-97" stroke-linecap="round"/>
+                <circle cx="44" cy="44" r="33" fill="none" stroke="var(--pink)" stroke-width="13" stroke-dasharray="70 137" stroke-dashoffset="-151" stroke-linecap="round"/>
+              </svg>
+              <div class="donut-legend">
+                <div class="dl-item"><div class="dl-dot" style="background:var(--green)"></div><span class="dl-label">Online</span><span class="dl-pct">40%</span></div>
+                <div class="dl-item"><div class="dl-dot" style="background:var(--blue)"></div><span class="dl-label">Direto</span><span class="dl-pct">26%</span></div>
+                <div class="dl-item"><div class="dl-dot" style="background:var(--pink)"></div><span class="dl-label">Parceiros</span><span class="dl-pct">34%</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title"><span>Meta vs Realizado</span></div>
+            <div class="gauge-inner">
+              <svg class="gauge-svg" viewBox="0 0 110 64">
+                <path d="M12,56 A44,44 0 0,1 98,56" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="11" stroke-linecap="round"/>
+                <path d="M12,56 A44,44 0 0,1 98,56" fill="none" stroke="var(--green)" stroke-width="11" stroke-dasharray="138.2" stroke-dashoffset="28" stroke-linecap="round"/>
+              </svg>
+              <div class="gauge-num" style="color:var(--green)">84%</div>
+              <div class="gauge-lbl">da meta atingida</div>
+            </div>
+          </div>
+        </div>
+        <div class="db-table">
+          <div class="dbt-head"><span>Produto</span><span>Qtd</span><span>Receita</span><span>Variação</span><span>Status</span></div>
+          <div class="dbt-row"><span class="td-name">Licença Enterprise</span><span class="td-num">48</span><span class="td-val">R$312K</span><span class="pos" style="font-family:var(--f-mono);font-size:.7rem">+24.3%</span><span><span class="badge badge-g">Ativo</span></span></div>
+          <div class="dbt-row"><span class="td-name">Plano Professional</span><span class="td-num">127</span><span class="td-val">R$254K</span><span class="pos" style="font-family:var(--f-mono);font-size:.7rem">+11.8%</span><span><span class="badge badge-g">Ativo</span></span></div>
+          <div class="dbt-row"><span class="td-name">Suporte Premium</span><span class="td-num">83</span><span class="td-val" style="color:var(--yellow)">R$166K</span><span class="neg" style="font-family:var(--f-mono);font-size:.7rem">-3.1%</span><span><span class="badge badge-y">Revisar</span></span></div>
+          <div class="dbt-row"><span class="td-name">Consultoria Avulsa</span><span class="td-num">31</span><span class="td-val">R$115K</span><span class="pos" style="font-family:var(--f-mono);font-size:.7rem">+18.5%</span><span><span class="badge badge-g">Ativo</span></span></div>
+        </div>
+      </div>
+
+      <!-- FINANCEIRO -->
+      <div id="pf" class="db-panel">
+        <div class="kpi-row">
+          <div class="kpi-card k1"><div class="kpi-lbl">Lucro Líquido</div><div class="kpi-num" style="color:var(--green)">R$284K</div><div class="kpi-chg pos">↑ 22.3%</div></div>
+          <div class="kpi-card k2"><div class="kpi-lbl">Margem Líquida</div><div class="kpi-num" style="color:var(--blue)">33.5%</div><div class="kpi-chg pos">↑ 3.1 pp</div></div>
+          <div class="kpi-card k3"><div class="kpi-lbl">Despesas</div><div class="kpi-num" style="color:var(--yellow)">R$563K</div><div class="kpi-chg neg">↑ 4.2%</div></div>
+          <div class="kpi-card k4"><div class="kpi-lbl">ROI</div><div class="kpi-num" style="color:var(--pink)">184%</div><div class="kpi-chg pos">↑ 12 pp</div></div>
+        </div>
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-title"><span>Fluxo de Caixa (R$ mil)</span><span style="color:var(--green)">2024</span></div>
+            <svg class="linechart" viewBox="0 0 440 110" preserveAspectRatio="none">
+              <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--green)" stop-opacity=".22"/><stop offset="100%" stop-color="var(--green)" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,95 L37,77 L73,83 L110,57 L147,62 L183,36 L220,45 L257,22 L293,30 L330,9 L367,16 L403,5 L440,2" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M0,95 L37,77 L73,83 L110,57 L147,62 L183,36 L220,45 L257,22 L293,30 L330,9 L367,16 L403,5 L440,2 L440,110 L0,110Z" fill="url(#g1)"/>
+              <circle cx="257" cy="22" r="4.5" fill="var(--green)"/>
+              <circle cx="440" cy="2" r="4.5" fill="var(--green)"/>
+            </svg>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title"><span>Centros de Custo</span></div>
+            <div class="donut-wrap">
+              <svg class="donut-svg" viewBox="0 0 88 88">
+                <circle cx="44" cy="44" r="33" fill="none" stroke="rgba(255,255,255,.04)" stroke-width="13"/>
+                <circle cx="44" cy="44" r="33" fill="none" stroke="var(--pink)" stroke-width="13" stroke-dasharray="73 134" stroke-dashoffset="-14"/>
+                <circle cx="44" cy="44" r="33" fill="none" stroke="var(--yellow)" stroke-width="13" stroke-dasharray="60 147" stroke-dashoffset="-87"/>
+                <circle cx="44" cy="44" r="33" fill="none" stroke="var(--blue)" stroke-width="13" stroke-dasharray="74 133" stroke-dashoffset="-147"/>
+              </svg>
+              <div class="donut-legend">
+                <div class="dl-item"><div class="dl-dot" style="background:var(--pink)"></div><span class="dl-label">Pessoal</span><span class="dl-pct">35%</span></div>
+                <div class="dl-item"><div class="dl-dot" style="background:var(--yellow)"></div><span class="dl-label">Infra</span><span class="dl-pct">29%</span></div>
+                <div class="dl-item"><div class="dl-dot" style="background:var(--blue)"></div><span class="dl-label">Marketing</span><span class="dl-pct">36%</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title"><span>EBITDA</span></div>
+            <div class="gauge-inner">
+              <svg class="gauge-svg" viewBox="0 0 110 64">
+                <path d="M12,56 A44,44 0 0,1 98,56" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="11" stroke-linecap="round"/>
+                <path d="M12,56 A44,44 0 0,1 98,56" fill="none" stroke="var(--blue)" stroke-width="11" stroke-dasharray="138.2" stroke-dashoffset="42" stroke-linecap="round"/>
+              </svg>
+              <div class="gauge-num" style="color:var(--blue)">71%</div>
+              <div class="gauge-lbl">eficiência EBITDA</div>
+            </div>
+          </div>
+        </div>
+        <div class="db-table">
+          <div class="dbt-head"><span>Centro de Custo</span><span>Orçado</span><span>Realizado</span><span>Variação</span><span>Status</span></div>
+          <div class="dbt-row"><span class="td-name">RH & Benefícios</span><span class="td-num">R$195K</span><span class="td-val">R$188K</span><span class="pos" style="font-family:var(--f-mono);font-size:.7rem">-3.6%</span><span><span class="badge badge-g">OK</span></span></div>
+          <div class="dbt-row"><span class="td-name">Infraestrutura</span><span class="td-num">R$160K</span><span class="td-val" style="color:var(--yellow)">R$174K</span><span class="neg" style="font-family:var(--f-mono);font-size:.7rem">+8.7%</span><span><span class="badge badge-y">Revisar</span></span></div>
+          <div class="dbt-row"><span class="td-name">Marketing</span><span class="td-num">R$200K</span><span class="td-val">R$201K</span><span class="pos" style="font-family:var(--f-mono);font-size:.7rem">+0.5%</span><span><span class="badge badge-g">OK</span></span></div>
+          <div class="dbt-row"><span class="td-name">P&D</span><span class="td-num">R$75K</span><span class="td-val" style="color:var(--pink)">R$92K</span><span class="neg" style="font-family:var(--f-mono);font-size:.7rem">+22.6%</span><span><span class="badge badge-r">Alerta</span></span></div>
+        </div>
+      </div>
+
+      <!-- OPERACIONAL -->
+      <div id="po" class="db-panel">
+        <div class="kpi-row">
+          <div class="kpi-card k1"><div class="kpi-lbl">Uptime Sistema</div><div class="kpi-num" style="color:var(--green)">99.8%</div><div class="kpi-chg pos">↑ Estável</div></div>
+          <div class="kpi-card k2"><div class="kpi-lbl">Tarefas / Dia</div><div class="kpi-num" style="color:var(--blue)">1.847</div><div class="kpi-chg pos">↑ 9.4%</div></div>
+          <div class="kpi-card k3"><div class="kpi-lbl">Tempo Médio</div><div class="kpi-num" style="color:var(--yellow)">2.4h</div><div class="kpi-chg pos">↓ 15 min</div></div>
+          <div class="kpi-card k4"><div class="kpi-lbl">SLA Atendido</div><div class="kpi-num" style="color:var(--pink)">97.2%</div><div class="kpi-chg pos">↑ 1.8 pp</div></div>
+        </div>
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-title"><span>Volume de Processamento / Hora</span></div>
+            <div class="col-bars">
+              <div class="cbar" style="height:55%;background:rgba(77,159,255,.28)"></div>
+              <div class="cbar" style="height:80%;background:rgba(77,159,255,.38)"></div>
+              <div class="cbar" style="height:63%;background:rgba(77,159,255,.3)"></div>
+              <div class="cbar" style="height:92%;background:rgba(77,159,255,.46)"></div>
+              <div class="cbar" style="height:74%;background:rgba(77,159,255,.35)"></div>
+              <div class="cbar" style="height:100%;background:var(--blue)"></div>
+              <div class="cbar" style="height:84%;background:rgba(77,159,255,.4)"></div>
+              <div class="cbar" style="height:67%;background:rgba(77,159,255,.32)"></div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title"><span>Status Tarefas</span></div>
+            <div class="donut-wrap">
+              <svg class="donut-svg" viewBox="0 0 88 88">
+                <circle cx="44" cy="44" r="33" fill="none" stroke="rgba(255,255,255,.04)" stroke-width="13"/>
+                <circle cx="44" cy="44" r="33" fill="none" stroke="var(--green)" stroke-width="13" stroke-dasharray="130 77" stroke-dashoffset="-14"/>
+                <circle cx="44" cy="44" r="33" fill="none" stroke="var(--yellow)" stroke-width="13" stroke-dasharray="35 172" stroke-dashoffset="-144"/>
+                <circle cx="44" cy="44" r="33" fill="none" stroke="var(--pink)" stroke-width="13" stroke-dasharray="42 165" stroke-dashoffset="-179"/>
+              </svg>
+              <div class="donut-legend">
+                <div class="dl-item"><div class="dl-dot" style="background:var(--green)"></div><span class="dl-label">Concluído</span><span class="dl-pct">63%</span></div>
+                <div class="dl-item"><div class="dl-dot" style="background:var(--yellow)"></div><span class="dl-label">Andamento</span><span class="dl-pct">17%</span></div>
+                <div class="dl-item"><div class="dl-dot" style="background:var(--pink)"></div><span class="dl-label">Pendente</span><span class="dl-pct">20%</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title"><span>Disponibilidade</span></div>
+            <div class="gauge-inner">
+              <svg class="gauge-svg" viewBox="0 0 110 64">
+                <path d="M12,56 A44,44 0 0,1 98,56" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="11" stroke-linecap="round"/>
+                <path d="M12,56 A44,44 0 0,1 98,56" fill="none" stroke="var(--green)" stroke-width="11" stroke-dasharray="138.2" stroke-dashoffset="3" stroke-linecap="round"/>
+              </svg>
+              <div class="gauge-num" style="color:var(--green)">99%</div>
+              <div class="gauge-lbl">disponibilidade</div>
+            </div>
+          </div>
+        </div>
+        <div class="db-table">
+          <div class="dbt-head"><span>Processo</span><span>Execuções</span><span>Sucesso</span><span>Último Run</span><span>Status</span></div>
+          <div class="dbt-row"><span class="td-name">ETL Diário</span><span class="td-num">1.204</span><span class="td-val">99.2%</span><span class="td-num">08:14</span><span><span class="badge badge-g">Normal</span></span></div>
+          <div class="dbt-row"><span class="td-name">Sync API</span><span class="td-num">38.450</span><span class="td-val">98.7%</span><span class="td-num">contínuo</span><span><span class="badge badge-g">Normal</span></span></div>
+          <div class="dbt-row"><span class="td-name">Backup DB</span><span class="td-num">24</span><span class="td-val" style="color:var(--yellow)">95.8%</span><span class="td-num">02:00</span><span><span class="badge badge-y">Verificar</span></span></div>
+          <div class="dbt-row"><span class="td-name">ML Pipeline</span><span class="td-num">12</span><span class="td-val">100%</span><span class="td-num">00:30</span><span><span class="badge badge-g">Normal</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ STACK ═══ -->
+<section id="stack" class="section section-dark">
+  <div class="stack-wrap">
+    <div class="reveal">
+      <div class="eyebrow">03 — Tecnologias</div>
+      <h2 class="sec-title">STACK COMPLETO</h2>
+      <p class="sec-desc">Do banco de dados ao visual final — domínio de todo o ecossistema de dados.</p>
+    </div>
+    <div class="tech-grid reveal d1">
+      <div class="tech-cell"><span class="tech-icon">🐍</span><span class="tech-name">Python</span></div>
+      <div class="tech-cell"><span class="tech-icon">📊</span><span class="tech-name">Power BI</span></div>
+      <div class="tech-cell"><span class="tech-icon">🗄️</span><span class="tech-name">SQL</span></div>
+      <div class="tech-cell"><span class="tech-icon">📋</span><span class="tech-name">Excel / VBA</span></div>
+      <div class="tech-cell"><span class="tech-icon">🚀</span><span class="tech-name">FastAPI</span></div>
+      <div class="tech-cell"><span class="tech-icon">📈</span><span class="tech-name">Plotly</span></div>
+      <div class="tech-cell"><span class="tech-icon">🐼</span><span class="tech-name">Pandas</span></div>
+      <div class="tech-cell"><span class="tech-icon">🌊</span><span class="tech-name">Streamlit</span></div>
+      <div class="tech-cell"><span class="tech-icon">🔢</span><span class="tech-name">NumPy</span></div>
+      <div class="tech-cell"><span class="tech-icon">🤖</span><span class="tech-name">Sklearn</span></div>
+      <div class="tech-cell"><span class="tech-icon">🐘</span><span class="tech-name">PostgreSQL</span></div>
+      <div class="tech-cell"><span class="tech-icon">☁️</span><span class="tech-name">Cloud</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PORTFOLIO ═══ -->
+<section id="portfolio" class="section section-darker">
+  <div class="reveal">
+    <div class="eyebrow">04 — Portfolio</div>
+    <h2 class="sec-title">PROJETOS ENTREGUES</h2>
+  </div>
+  <div class="port-grid reveal d1">
+
+    <div class="port-card">
+      <div class="port-thumb" style="background:linear-gradient(135deg,#071420,#0d2840)">
+        <div style="width:82%;display:flex;flex-direction:column;gap:.8rem">
+          <div style="display:flex;gap:5px;align-items:flex-end;height:86px">
+            <div style="flex:1;height:48%;background:rgba(0,255,135,.28);border-radius:3px 3px 0 0"></div>
+            <div style="flex:1;height:70%;background:rgba(0,255,135,.4);border-radius:3px 3px 0 0"></div>
+            <div style="flex:1;height:56%;background:rgba(0,255,135,.32);border-radius:3px 3px 0 0"></div>
+            <div style="flex:1;height:88%;background:rgba(0,255,135,.52);border-radius:3px 3px 0 0"></div>
+            <div style="flex:1;height:64%;background:rgba(0,255,135,.36);border-radius:3px 3px 0 0"></div>
+            <div style="flex:1;height:100%;background:var(--green);border-radius:3px 3px 0 0"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+            <div style="background:rgba(0,255,135,.06);border:1px solid rgba(0,255,135,.14);border-radius:5px;padding:.55rem;text-align:center"><div style="font-family:var(--f-disp);font-size:1.1rem;font-weight:700;color:var(--green)">R$847K</div><div style="font-family:var(--f-mono);font-size:.5rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Receita</div></div>
+            <div style="background:rgba(0,255,135,.06);border:1px solid rgba(0,255,135,.14);border-radius:5px;padding:.55rem;text-align:center"><div style="font-family:var(--f-disp);font-size:1.1rem;font-weight:700;color:var(--green)">+18%</div><div style="font-family:var(--f-mono);font-size:.5rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Crescimento</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="port-meta"><div class="port-cat">Power BI</div><div class="port-name">BI para Varejo</div><div class="port-desc">Dashboard integrado com 12 lojas, análise de estoque, vendas por região e previsão de demanda.</div></div>
+      <div class="port-link">↗</div>
+    </div>
+
+    <div class="port-card">
+      <div class="port-thumb" style="background:linear-gradient(135deg,#0c0820,#180d38)">
+        <div style="width:82%">
+          <svg width="100%" height="90" viewBox="0 0 260 90">
+            <defs><linearGradient id="pg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4d9fff" stop-opacity=".28"/><stop offset="100%" stop-color="#4d9fff" stop-opacity="0"/></linearGradient></defs>
+            <path d="M0,82 L26,64 L52,70 L78,46 L104,52 L130,28 L156,37 L182,16 L208,22 L234,7 L260,3" fill="none" stroke="var(--blue)" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M0,82 L26,64 L52,70 L78,46 L104,52 L130,28 L156,37 L182,16 L208,22 L234,7 L260,3 L260,90 L0,90Z" fill="url(#pg2)"/>
+            <circle cx="182" cy="16" r="4" fill="var(--blue)"/>
+            <circle cx="260" cy="3" r="4" fill="var(--blue)"/>
+          </svg>
+        </div>
+      </div>
+      <div class="port-meta"><div class="port-cat">Python + Streamlit</div><div class="port-name">Análise Financeira</div><div class="port-desc">App web com análise de carteira de investimentos, backtesting e alertas automáticos por e-mail.</div></div>
+      <div class="port-link">↗</div>
+    </div>
+
+    <div class="port-card">
+      <div class="port-thumb" style="background:linear-gradient(135deg,#081e10,#0c2c18)">
+        <div style="width:82%;display:flex;flex-direction:column;gap:.6rem">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:var(--f-mono);font-size:.54rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase">Automação Ativa</span><span style="width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block"></span></div>
+          <div style="display:flex;flex-direction:column;gap:.55rem">
+            <div style="height:5px;background:rgba(0,255,135,.1);border-radius:3px;overflow:hidden"><div style="height:100%;width:87%;background:var(--green)"></div></div>
+            <div style="height:5px;background:rgba(0,255,135,.1);border-radius:3px;overflow:hidden"><div style="height:100%;width:63%;background:rgba(0,255,135,.55)"></div></div>
+            <div style="height:5px;background:rgba(0,255,135,.1);border-radius:3px;overflow:hidden"><div style="height:100%;width:94%;background:var(--green)"></div></div>
+            <div style="height:5px;background:rgba(0,255,135,.1);border-radius:3px;overflow:hidden"><div style="height:100%;width:41%;background:rgba(0,255,135,.38)"></div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.2rem">
+            <div style="background:rgba(0,255,135,.06);border:1px solid rgba(0,255,135,.12);border-radius:5px;padding:.55rem;text-align:center"><div style="font-family:var(--f-disp);font-size:1.2rem;font-weight:700;color:var(--green)">2.1K</div><div style="font-family:var(--f-mono);font-size:.48rem;color:var(--muted);text-transform:uppercase">Proc./dia</div></div>
+            <div style="background:rgba(0,255,135,.06);border:1px solid rgba(0,255,135,.12);border-radius:5px;padding:.55rem;text-align:center"><div style="font-family:var(--f-disp);font-size:1.2rem;font-weight:700;color:var(--green)">99%</div><div style="font-family:var(--f-mono);font-size:.48rem;color:var(--muted);text-transform:uppercase">Uptime</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="port-meta"><div class="port-cat">Python + ETL</div><div class="port-name">Automação Industrial</div><div class="port-desc">Pipeline de dados para indústria: coleta de sensores IoT e processamento em tempo real.</div></div>
+      <div class="port-link">↗</div>
+    </div>
+
+    <div class="port-card">
+      <div class="port-thumb" style="background:linear-gradient(135deg,#1c1000,#2e1a00)">
+        <div style="width:82%">
+          <div style="background:rgba(255,224,77,.04);border:1px solid rgba(255,224,77,.14);border-radius:7px;overflow:hidden">
+            <div style="background:rgba(255,224,77,.08);padding:.45rem .8rem;display:grid;grid-template-columns:2fr 1fr 1fr;font-family:var(--f-mono);font-size:.5rem;color:rgba(255,224,77,.45);letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid rgba(255,224,77,.08)"><span>Produto</span><span>Qtd</span><span>Total</span></div>
+            <div style="padding:.4rem .8rem;display:grid;grid-template-columns:2fr 1fr 1fr;font-size:.65rem;border-bottom:1px solid rgba(255,224,77,.06)"><span style="color:var(--muted)">Produto A</span><span style="font-family:var(--f-mono);font-size:.54rem;color:var(--muted)">142</span><span style="font-family:var(--f-mono);font-size:.6rem;color:var(--green)">R$8.5K</span></div>
+            <div style="padding:.4rem .8rem;display:grid;grid-template-columns:2fr 1fr 1fr;font-size:.65rem;border-bottom:1px solid rgba(255,224,77,.06)"><span style="color:var(--muted)">Produto B</span><span style="font-family:var(--f-mono);font-size:.54rem;color:var(--muted)">89</span><span style="font-family:var(--f-mono);font-size:.6rem;color:var(--green)">R$6.2K</span></div>
+            <div style="padding:.4rem .8rem;display:grid;grid-template-columns:2fr 1fr 1fr;font-size:.65rem"><span style="color:var(--muted)">Produto C</span><span style="font-family:var(--f-mono);font-size:.54rem;color:var(--muted)">234</span><span style="font-family:var(--f-mono);font-size:.6rem;color:var(--yellow)">R$4.1K</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="port-meta"><div class="port-cat">Excel Avançado</div><div class="port-name">Controle de Estoque</div><div class="port-desc">Planilha com macros VBA, dashboard integrado, alertas de reposição e relatórios automáticos.</div></div>
+      <div class="port-link">↗</div>
+    </div>
+
+    <div class="port-card">
+      <div class="port-thumb" style="background:linear-gradient(135deg,#0e0820,#0a0828)">
+        <div style="font-family:var(--f-mono);font-size:.68rem;line-height:2;padding:1rem 1.4rem;width:100%">
+          <span style="color:rgba(255,224,77,.7)">import</span><span style="color:rgba(77,159,255,.7)"> pandas </span><span style="color:rgba(255,224,77,.7)">as</span><span style="color:rgba(77,159,255,.7)"> pd</span><br>
+          <span style="color:rgba(255,224,77,.7)">from</span><span style="color:rgba(77,159,255,.7)"> sklearn.ensemble </span><span style="color:rgba(255,224,77,.7)">import</span><span style="color:rgba(77,159,255,.7)"> RF</span><br><br>
+          <span style="color:var(--green)">model</span><span style="color:var(--muted)"> = </span><span style="color:rgba(77,159,255,.8)">RF</span><span style="color:var(--muted)">(n_estimators=</span><span style="color:var(--yellow)">200</span><span style="color:var(--muted)">)</span><br>
+          <span style="color:var(--green)">model</span><span style="color:var(--muted)">.fit(X_train, y_train)</span><br>
+          <span style="color:var(--muted)"># Acurácia: </span><span style="color:var(--green)">94.7%</span>
+        </div>
+      </div>
+      <div class="port-meta"><div class="port-cat">Machine Learning</div><div class="port-name">Previsão de Demanda</div><div class="port-desc">Modelo preditivo com 94% de acurácia que reduziu estoque parado em 38% em e-commerce.</div></div>
+      <div class="port-link">↗</div>
+    </div>
+
+    <div class="port-card">
+      <div class="port-thumb" style="background:linear-gradient(135deg,#060e18,#081428)">
+        <div style="width:82%;display:flex;flex-direction:column;gap:.7rem">
+          <div style="display:flex;justify-content:space-between"><span style="font-family:var(--f-mono);font-size:.52rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase">Power BI — RH</span><span style="font-family:var(--f-mono);font-size:.52rem;color:var(--green)">● Online</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.45rem">
+            <div style="background:rgba(77,159,255,.06);border:1px solid rgba(77,159,255,.14);border-radius:5px;padding:.5rem;text-align:center"><div style="font-family:var(--f-disp);font-size:1.2rem;font-weight:700;color:var(--blue)">847</div><div style="font-family:var(--f-mono);font-size:.46rem;color:var(--muted);text-transform:uppercase">Headcount</div></div>
+            <div style="background:rgba(77,159,255,.06);border:1px solid rgba(77,159,255,.14);border-radius:5px;padding:.5rem;text-align:center"><div style="font-family:var(--f-disp);font-size:1.2rem;font-weight:700;color:var(--blue)">4.2%</div><div style="font-family:var(--f-mono);font-size:.46rem;color:var(--muted);text-transform:uppercase">Turnover</div></div>
+            <div style="background:rgba(77,159,255,.06);border:1px solid rgba(77,159,255,.14);border-radius:5px;padding:.5rem;text-align:center"><div style="font-family:var(--f-disp);font-size:1.2rem;font-weight:700;color:var(--blue)">8.4</div><div style="font-family:var(--f-mono);font-size:.46rem;color:var(--muted);text-transform:uppercase">Satisfação</div></div>
+          </div>
+          <div style="height:4px;background:rgba(77,159,255,.08);border-radius:2px;overflow:hidden"><div style="height:100%;width:78%;background:var(--blue)"></div></div>
+        </div>
+      </div>
+      <div class="port-meta"><div class="port-cat">Power BI + SQL</div><div class="port-name">BI para RH</div><div class="port-desc">Painel com KPIs de headcount, turnover, performance e análise salarial integrada ao ERP.</div></div>
+      <div class="port-link">↗</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about" class="section section-dark">
+  <div class="about-grid">
+    <div class="reveal">
+      <div class="about-frame">
+        <div class="af-letters">ES</div>
+        <div class="af-tr"></div>
+        <div class="af-bl"></div>
+        <div class="af-grad"></div>
+        <div class="af-caption">
+          <div class="af-name">Everton<br>Sacramento</div>
+          <div class="af-role">Fundador — EverData</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-text reveal d2">
+      <div class="eyebrow">05 — Sobre</div>
+      <h2 class="sec-title">DADOS SÃO LINGUAGEM</h2>
+      <p>Trabalho com dados porque acredito que <strong>toda decisão importante merece ser baseada em evidências</strong>. Não em feeling, não em achismo — em números bem interpretados.</p>
+      <p>Com mais de 5 anos transformando dados brutos em painéis que gestores realmente usam, desenvolvi um método próprio: <strong>entender o negócio primeiro</strong>, depois construir a solução técnica.</p>
+      <p>Cada projeto que entrego tem um objetivo claro: <strong>fazer você tomar decisões melhores, mais rápido</strong>.</p>
+      <div class="ab-skills">
+        <div class="ab-skill">Visualização de Dados</div>
+        <div class="ab-skill">Business Intelligence</div>
+        <div class="ab-skill">Automação Python</div>
+        <div class="ab-skill">Machine Learning</div>
+        <div class="ab-skill">ETL & Pipelines</div>
+        <div class="ab-skill">Excel Avançado</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRICING ═══ -->
+<section id="pricing" class="section section-darker">
+  <div class="reveal">
+    <div class="eyebrow">06 — Investimento</div>
+    <h2 class="sec-title">PLANOS & VALORES</h2>
+  </div>
+  <div class="price-grid reveal d1">
+    <div class="price-col">
+      <div class="plan-tier">Starter</div>
+      <div class="plan-price"><sup>R$</sup>500</div>
+      <div class="plan-freq">por projeto</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li><strong>1 dashboard</strong> ou relatório</li>
+        <li>Análise de dados básica</li>
+        <li>Planilha avançada com fórmulas</li>
+        <li>Entrega em até <strong>7 dias</strong></li>
+        <li>1 revisão incluída</li>
+      </ul>
+      <a href="#contact" class="plan-cta plan-cta-out">Solicitar</a>
+    </div>
+    <div class="price-col featured">
+      <div class="feat-tag">Mais Popular</div>
+      <div class="plan-tier">Professional</div>
+      <div class="plan-price"><sup>R$</sup>1.800</div>
+      <div class="plan-freq">por projeto</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li><strong>Dashboard completo</strong> web ou Power BI</li>
+        <li>Sistema Python personalizado</li>
+        <li>Integração com banco de dados</li>
+        <li>ETL e pipeline de dados</li>
+        <li>Entrega em até <strong>15 dias</strong></li>
+        <li>3 revisões + suporte <strong>30 dias</strong></li>
+      </ul>
+      <a href="#contact" class="plan-cta plan-cta-main">Solicitar Agora</a>
+    </div>
+    <div class="price-col">
+      <div class="plan-tier">Enterprise</div>
+      <div class="plan-price" style="font-size:2.6rem;line-height:1.1">Sob<br>Consulta</div>
+      <div class="plan-freq">mensal / por escopo</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li>Projetos <strong>ilimitados</strong> por mês</li>
+        <li>Suporte e manutenção contínua</li>
+        <li>BI corporativo completo</li>
+        <li>Treinamento da equipe</li>
+        <li>SLA garantido em contrato</li>
+        <li>Reuniões semanais</li>
+      </ul>
+      <a href="#contact" class="plan-cta plan-cta-out">Falar com Everton</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<section id="contact" class="section section-dark">
+  <div class="contact-wrap">
+    <div class="contact-left reveal">
+      <div class="eyebrow">07 — Contato</div>
+      <h2 class="sec-title">VAMOS CRIAR JUNTOS?</h2>
+      <p>Me conte sobre seu projeto. Respondo em até 24 horas com uma proposta clara e sem enrolação.</p>
+      <div class="ct-details">
+        <div class="ct-item"><div class="ct-icon">✉</div><div><div class="ct-label">Email</div><div class="ct-val"><a href="mailto:facofacil@gmail.com">facofacil@gmail.com</a></div></div></div>
+        <div class="ct-item"><div class="ct-icon">👤</div><div><div class="ct-label">Fundador</div><div class="ct-val">Everton Sacramento</div></div></div>
+        <div class="ct-item"><div class="ct-icon">📍</div><div><div class="ct-label">Atendimento</div><div class="ct-val">Brasil inteiro — 100% remoto</div></div></div>
+        <div class="ct-item"><div class="ct-icon">⏱</div><div><div class="ct-label">Resposta</div><div class="ct-val">Em até 24 horas úteis</div></div></div>
+      </div>
+    </div>
+    <div class="cform reveal d2">
+      <div class="form-row">
+        <div><label class="form-label">Nome</label><input type="text" class="form-input" placeholder="Seu nome completo"></div>
+        <div><label class="form-label">Email</label><input type="email" class="form-input" placeholder="seu@email.com"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Empresa</label><input type="text" class="form-input" placeholder="Nome da empresa (opcional)"></div>
+      <div class="form-group">
+        <label class="form-label">Tipo de Projeto</label>
+        <select class="form-select">
+          <option value="">Selecione o serviço...</option>
+          <option>Dashboard Web (Streamlit / Plotly)</option>
+          <option>Power BI</option>
+          <option>Sistema Python</option>
+          <option>Planilha Excel Avançada</option>
+          <option>Análise de Dados</option>
+          <option>ETL / Integração de dados</option>
+          <option>Machine Learning</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Mensagem</label><textarea class="form-textarea" placeholder="Descreva seu projeto, volume de dados, prazo e qualquer detalhe relevante..."></textarea></div>
+      <button class="form-submit" onclick="handleSubmit(this)">Enviar Mensagem →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="foot-logo">Ever<em>Data</em></div>
+  <ul class="foot-nav">
+    <li><a href="#services">Serviços</a></li>
+    <li><a href="#showcase">Demos</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#about">Sobre</a></li>
+    <li><a href="mailto:facofacil@gmail.com">Email</a></li>
+  </ul>
+  <div class="foot-copy">© 2024 EverData — Everton Sacramento</div>
+</footer>
+
+<script>
+  // cursor
+  const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+  document.addEventListener('mousemove',e=>{
+    cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';
+    cur2.style.left=e.clientX+'px';cur2.style.top=e.clientY+'px';
+  });
+
+  // tab switch
+  const tabMap={v:['pv','vendas'],f:['pf','financeiro'],o:['po','operacional']};
+  function switchTab(btn,k){
+    document.querySelectorAll('.db-panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById(tabMap[k][0]).classList.add('active');
+    document.getElementById('tab-label').textContent=tabMap[k][1];
+    btn.classList.add('active');
+  }
+
+  // scroll reveal
+  const revEls=document.querySelectorAll('.reveal');
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{threshold:0.07});
+  revEls.forEach(el=>io.observe(el));
+
+  // form submit
+  function handleSubmit(btn){
+    btn.textContent='✓ Mensagem enviada!';
+    btn.style.background='var(--green)';
+    setTimeout(()=>{btn.textContent='Enviar Mensagem →';btn.style.background='';},3500);
+  }
+</script>
+</body>
+</html>
