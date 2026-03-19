@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#030508">
+<title>EverData | Análise & Automação de Dados</title>
+<meta name="description" content="Automação, dashboards e análise de dados para aumentar lucro e produtividade. EverData — Everton Sacramento.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+
+<style>
+:root {
+  --bg: #030508;
+  --surface: #080d14;
+  --surface2: #0d1520;
+  --border: rgba(0,200,255,0.08);
+  --cyan: #00d4ff;
+  --blue: #0057ff;
+  --accent: #00ffb3;
+  --text: #e8f0fe;
+  --muted: #5a7090;
+  --max: 1160px;
+  --px: 60px;
+  --nav-h: 68px;
+  --mob-nav: 68px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Manrope', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0; opacity: 0.4;
+}
+
+/* ── CENTERING WRAPPER ── */
+.wrap {
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--px);
+}
+
+/* ── TOP NAV ── */
+nav.top-nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 200; height: var(--nav-h);
+  display: flex; align-items: center;
+  background: rgba(3,5,8,0.88);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  width: 100%; max-width: var(--max);
+  margin: 0 auto; padding: 0 var(--px);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.logo {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800; font-size: 1.35rem; letter-spacing: -0.5px;
+}
+.logo span { color: var(--cyan); }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a {
+  color: var(--muted); text-decoration: none;
+  font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.6px; text-transform: uppercase;
+  transition: color .3s;
+}
+.nav-links a:hover { color: var(--cyan); }
+.nav-cta {
+  padding: 10px 22px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  color: #000; font-weight: 700; font-size: 0.82rem;
+  text-decoration: none; transition: .3s; white-space: nowrap;
+}
+.nav-cta:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,87,255,.4); }
+
+/* ── BOTTOM NAV (mobile only) ── */
+.bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 200; height: var(--mob-nav);
+  background: rgba(8,13,20,0.96);
+  backdrop-filter: blur(24px);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.bottom-nav ul { list-style: none; display: flex; height: 100%; }
+.bottom-nav li { flex: 1; }
+.bottom-nav a {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px; height: 100%;
+  color: var(--muted); text-decoration: none;
+  font-size: 0.58rem; font-weight: 700;
+  letter-spacing: 0.5px; text-transform: uppercase;
+  transition: color .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.bottom-nav a.active { color: var(--cyan); }
+.bottom-nav .icon { font-size: 1.15rem; line-height: 1; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  padding-top: calc(var(--nav-h) + 60px);
+  padding-bottom: 80px;
+  position: relative; overflow: hidden;
+}
+.hero::after {
+  content: ''; position: absolute; top: -20%; right: -10%;
+  width: 60vw; height: 60vw; max-width: 700px; max-height: 700px;
+  background: radial-gradient(circle, rgba(0,87,255,.13) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-content { position: relative; z-index: 1; }
+
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(0,212,255,.06);
+  border: 1px solid rgba(0,212,255,.2);
+  border-radius: 100px; padding: 6px 16px;
+  font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--cyan); margin-bottom: 28px;
+  animation: fadeUp .6s ease both;
+}
+.hero-tag::before {
+  content: ''; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--cyan);
+  animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+.hero-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(2.4rem, 5.5vw, 5rem);
+  font-weight: 800; line-height: 1.06; letter-spacing: -2px;
+  max-width: 780px;
+  animation: fadeUp .6s .1s ease both;
+}
+.hero-title .gr {
+  background: linear-gradient(100deg, var(--cyan) 0%, var(--blue) 55%, var(--accent) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  color: var(--muted); font-size: 1.05rem;
+  max-width: 500px; margin-top: 22px;
+  line-height: 1.75; font-weight: 400;
+  animation: fadeUp .6s .2s ease both;
+}
+.hero-actions {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  margin-top: 40px;
+  animation: fadeUp .6s .3s ease both;
+}
+.btn-primary {
+  padding: 15px 32px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  color: #000; font-weight: 700; font-size: 0.88rem;
+  text-decoration: none; transition: .3s;
+  white-space: nowrap; display: inline-block;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(0,87,255,.4); }
+.btn-secondary {
+  padding: 15px 32px; border-radius: 12px;
+  border: 1px solid var(--border);
+  color: var(--text); font-weight: 500; font-size: 0.88rem;
+  text-decoration: none; transition: .3s; background: transparent;
+  white-space: nowrap; display: inline-block;
+}
+.btn-secondary:hover { border-color: rgba(0,212,255,.3); background: rgba(0,212,255,.04); }
+
+.hero-stats {
+  display: flex; gap: 48px; flex-wrap: wrap;
+  margin-top: 64px; padding-top: 40px;
+  border-top: 1px solid var(--border);
+  animation: fadeUp .6s .4s ease both;
+}
+.stat-num {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.2rem; font-weight: 800;
+  background: linear-gradient(90deg, var(--cyan), var(--accent));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; line-height: 1;
+}
+.stat-label {
+  color: var(--muted); font-size: 0.72rem;
+  margin-top: 5px; text-transform: uppercase; letter-spacing: .8px;
+}
+
+.scroll-ind {
+  position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  color: var(--muted); font-size: 0.62rem;
+  letter-spacing: 2px; text-transform: uppercase;
+  animation: fadeUp 1s .8s ease both;
+}
+.scroll-line {
+  width: 1px; height: 44px;
+  background: linear-gradient(to bottom, var(--cyan), transparent);
+  animation: scrollAnim 2s ease-in-out infinite;
+}
+@keyframes scrollAnim { 0%,100%{opacity:.3} 50%{opacity:1} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── SECTIONS ── */
+.section { padding: 100px 0; }
+
+.section-label {
+  font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--cyan); margin-bottom: 12px;
+}
+.section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 800; letter-spacing: -1px; line-height: 1.1;
+}
+.section-desc {
+  color: var(--muted); margin-top: 14px;
+  line-height: 1.8; font-weight: 300; font-size: .93rem;
+}
+
+/* ── SERVICES ── */
+.services-grid {
+  display: grid; grid-template-columns: repeat(2,1fr);
+  gap: 2px; margin-top: 52px;
+  border-radius: 20px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.service-card {
+  background: var(--surface); padding: 40px 36px;
+  transition: .4s; position: relative; overflow: hidden;
+}
+.service-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(0,212,255,.04) 0%, transparent 60%);
+  opacity: 0; transition: .4s;
+}
+.service-card:hover { background: var(--surface2); }
+.service-card:hover::before { opacity: 1; }
+.service-icon {
+  width: 48px; height: 48px; border-radius: 13px;
+  background: rgba(0,212,255,.08);
+  border: 1px solid rgba(0,212,255,.15);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px; font-size: 1.4rem;
+}
+.service-card h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.08rem; font-weight: 700; margin-bottom: 10px;
+}
+.service-card p { color: var(--muted); line-height: 1.7; font-size: .87rem; }
+.service-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+.tag {
+  padding: 3px 11px; border-radius: 100px;
+  background: rgba(0,212,255,.06);
+  border: 1px solid rgba(0,212,255,.12);
+  font-size: .68rem; color: var(--cyan); font-weight: 700;
+}
+
+/* ── DASHBOARD ── */
+.dash-section {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 100px 0;
+}
+.dash-header {
+  display: flex; justify-content: space-between;
+  align-items: flex-end; margin-bottom: 40px;
+  flex-wrap: wrap; gap: 16px;
+}
+.live-badge {
+  display: flex; align-items: center; gap: 8px;
+  font-size: .68rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
+}
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent); animation: blink 2s infinite;
+}
+
+.kpi-row {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 2px; margin-bottom: 2px;
+}
+.kpi-card {
+  background: var(--bg); padding: 24px 26px;
+  position: relative; overflow: hidden;
+}
+.kpi-card::after {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--blue));
+  transform: scaleX(0); transform-origin: left; transition: .5s;
+}
+.kpi-card:hover::after { transform: scaleX(1); }
+.kpi-label {
+  font-size: .68rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
+}
+.kpi-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.9rem; font-weight: 800; margin-top: 8px; line-height: 1;
+}
+.kpi-change { font-size: .72rem; margin-top: 7px; font-weight: 600; }
+.kpi-change.up { color: var(--accent); }
+.kpi-change.down { color: #ff5566; }
+
+.charts-grid {
+  display: grid; grid-template-columns: 2fr 1fr; gap: 2px;
+}
+.chart-widget { background: var(--bg); padding: 28px; }
+.chart-widget h4 {
+  font-family: 'Outfit', sans-serif;
+  font-size: .86rem; font-weight: 700; margin-bottom: 3px;
+}
+.chart-desc { font-size: .73rem; color: var(--muted); margin-bottom: 20px; }
+.chart-wrap { position: relative; width: 100%; }
+.chart-wrap canvas { display: block; }
+
+.table-widget { background: var(--bg); padding: 28px; }
+.table-widget h4 {
+  font-family: 'Outfit', sans-serif;
+  font-size: .86rem; font-weight: 700; margin-bottom: 18px;
+}
+.mini-table { width: 100%; border-collapse: collapse; }
+.mini-table th {
+  text-align: left; font-size: .65rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .8px;
+  padding: 0 0 10px; border-bottom: 1px solid var(--border);
+}
+.mini-table td {
+  padding: 11px 0; font-size: .8rem;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+}
+.mini-table td:last-child { text-align: right; }
+.badge {
+  padding: 3px 10px; border-radius: 100px;
+  font-size: .64rem; font-weight: 700;
+}
+.badge.green { background: rgba(0,255,179,.1); color: var(--accent); }
+.badge.yellow { background: rgba(255,200,0,.1); color: #ffc800; }
+
+/* ── PROCESS ── */
+.process-list { margin-top: 52px; display: flex; flex-direction: column; gap: 2px; }
+.process-item {
+  display: grid; grid-template-columns: 70px 1fr 60px;
+  align-items: center; gap: 28px;
+  background: var(--surface); padding: 28px 36px;
+  transition: .3s; border-left: 3px solid transparent;
+}
+.process-item:hover { background: var(--surface2); border-left-color: var(--cyan); }
+.process-num {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.5rem; font-weight: 800;
+  color: rgba(0,212,255,.12); line-height: 1; transition: .3s;
+}
+.process-item:hover .process-num { color: rgba(0,212,255,.3); }
+.process-item h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: .98rem; font-weight: 700; margin-bottom: 5px;
+}
+.process-item p { color: var(--muted); font-size: .84rem; line-height: 1.6; }
+.process-icon { font-size: 1.6rem; opacity: .55; text-align: right; }
+
+/* ── RESULTS ── */
+.results-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 2px; margin-top: 52px;
+}
+.result-card {
+  background: var(--surface); padding: 44px 26px;
+  position: relative; overflow: hidden; transition: .4s;
+}
+.result-card::before {
+  content: ''; position: absolute;
+  bottom: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--cyan), var(--accent));
+  transform: scaleX(0); transition: .4s;
+}
+.result-card:hover { background: var(--surface2); }
+.result-card:hover::before { transform: scaleX(1); }
+.result-number {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.8rem; font-weight: 800; line-height: 1;
+  background: linear-gradient(135deg, var(--cyan), var(--accent));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.result-label { font-size: .84rem; color: var(--muted); margin-top: 12px; line-height: 1.6; }
+
+/* ── TESTIMONIALS ── */
+.testimonial-section {
+  background: linear-gradient(135deg, rgba(0,87,255,.04), rgba(0,212,255,.04));
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 100px 0;
+}
+.testimonials-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 18px; margin-top: 52px;
+}
+.testimonial-card {
+  background: var(--surface); padding: 32px;
+  border-radius: 16px; border: 1px solid var(--border); transition: .4s;
+}
+.testimonial-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0,212,255,.2);
+  box-shadow: 0 20px 50px rgba(0,0,0,.4);
+}
+.stars { color: var(--cyan); font-size: .85rem; letter-spacing: 2px; margin-bottom: 14px; }
+.testimonial-text { font-size: .87rem; line-height: 1.75; color: #b0c4d8; margin-bottom: 22px; }
+.testimonial-author { display: flex; align-items: center; gap: 12px; }
+.author-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Outfit', sans-serif; font-weight: 800;
+  font-size: .84rem; color: #000; flex-shrink: 0;
+}
+.author-name { font-weight: 700; font-size: .84rem; }
+.author-role { font-size: .7rem; color: var(--muted); }
+
+/* ── CTA ── */
+.cta-section {
+  padding: 120px 0; text-align: center;
+  position: relative; overflow: hidden;
+}
+.cta-section::before {
+  content: ''; position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 600px; height: 400px;
+  background: radial-gradient(ellipse, rgba(0,87,255,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-section .section-title { font-size: clamp(2rem, 4.5vw, 3.5rem); }
+.cta-section .section-desc { max-width: 440px; margin: 14px auto 0; font-size: .94rem; }
+.cta-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 36px; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 44px 0;
+}
+.footer-inner {
+  width: 100%; max-width: var(--max);
+  margin: 0 auto; padding: 0 var(--px);
+  display: flex; justify-content: space-between;
+  align-items: center; flex-wrap: wrap; gap: 20px;
+}
+.footer-logo { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.15rem; }
+.footer-logo span { color: var(--cyan); }
+.footer-copy { color: var(--muted); font-size: .78rem; }
+.footer-links { display: flex; gap: 24px; }
+.footer-links a { color: var(--muted); font-size: .78rem; text-decoration: none; transition: .3s; }
+.footer-links a:hover { color: var(--cyan); }
+
+/* ════════════════════════════
+   TABLET  768–1024
+════════════════════════════ */
+@media (max-width: 1024px) {
+  :root { --px: 32px; }
+  .kpi-row { grid-template-columns: repeat(2,1fr); }
+  .charts-grid { grid-template-columns: 1fr; }
+}
+
+/* ════════════════════════════
+   MOBILE  ≤768   — app-like
+════════════════════════════ */
+@media (max-width: 768px) {
+  :root { --px: 20px; --nav-h: 60px; }
+
+  /* show bottom nav, hide desktop elements */
+  .nav-links, .nav-cta { display: none; }
+  .bottom-nav { display: block; }
+  body { padding-bottom: calc(var(--mob-nav) + env(safe-area-inset-bottom)); }
+  footer { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+
+  /* HERO — centred for mobile */
+  .hero { padding-top: calc(var(--nav-h) + 40px); padding-bottom: 60px; }
+  .hero-content { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .hero-title { letter-spacing: -1px; }
+  .hero-sub { max-width: 320px; font-size: .92rem; }
+  .hero-actions { flex-direction: column; width: 100%; max-width: 300px; }
+  .btn-primary, .btn-secondary { text-align: center; width: 100%; padding: 16px 20px; border-radius: 14px; }
+  .hero-stats { justify-content: center; gap: 24px; margin-top: 44px; padding-top: 28px; }
+  .stat-num { font-size: 1.75rem; }
+  .scroll-ind { display: none; }
+
+  /* sections */
+  .section { padding: 64px 0; }
+  .dash-section, .testimonial-section { padding: 64px 0; }
+  .cta-section { padding: 80px 0; }
+
+  /* services */
+  .services-grid { grid-template-columns: 1fr; border-radius: 16px; }
+  .service-card { padding: 28px 22px; }
+
+  /* KPIs */
+  .kpi-row { grid-template-columns: repeat(2,1fr); gap: 2px; }
+  .kpi-value { font-size: 1.45rem; }
+  .kpi-card { padding: 18px 16px; }
+
+  /* process */
+  .process-item { grid-template-columns: 46px 1fr; padding: 20px 18px; gap: 14px; }
+  .process-icon { display: none; }
+  .process-num { font-size: 1.9rem; }
+
+  /* results */
+  .results-grid { grid-template-columns: 1fr; }
+  .result-card { padding: 32px 26px; }
+  .result-number { font-size: 2.8rem; }
+
+  /* testimonials */
+  .testimonials-grid { grid-template-columns: 1fr; gap: 14px; }
+
+  /* dash header */
+  .dash-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+
+  /* CTA */
+  .cta-actions { flex-direction: column; align-items: center; }
+  .cta-actions .btn-primary, .cta-actions .btn-secondary { width: 100%; max-width: 300px; text-align: center; }
+
+  /* footer */
+  .footer-inner { flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+  .footer-links { flex-wrap: wrap; justify-content: center; gap: 14px; }
+}
+
+@media (max-width: 400px) {
+  .hero-title { font-size: 2rem; }
+  .kpi-card { padding: 14px 12px; }
+  .kpi-value { font-size: 1.3rem; }
+}
+
+.result-label small {
+  display: block;
+  margin-top: 10px;
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.result-label a {
+  color: #00f0ff;
+  text-decoration: none;
+}
+
+.result-label a:hover {
+  text-decoration: underline;
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <div class="nav-inner">
+    <div class="logo">Ever<span>Data</span></div>
+    <ul class="nav-links">
+      <li><a href="#servicos">Serviços</a></li>
+      <li><a href="#dashboard">Dashboard</a></li>
+      <li><a href="#processo">Processo</a></li>
+      <li><a href="#resultados">Resultados</a></li>
+    </ul>
+    <a href="https://wa.me/5581996458010" target="_blank" rel="noopener noreferrer" class="nav-cta">
+      Falar no WhatsApp
+    </a>
+  </div>
+</nav>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav">
+  <ul>
+    <li><a href="#top" class="active"><span class="icon">🏠</span>Início</a></li>
+    <li><a href="#servicos"><span class="icon">⚙️</span>Serviços</a></li>
+    <li><a href="#dashboard"><span class="icon">📊</span>Dashboard</a></li>
+    <li><a href="#resultados"><span class="icon">🏆</span>Resultados</a></li>
+    <li><a href="https://wa.me/5581996458010" target="_blank" rel="noopener noreferrer"><span class="icon">💬</span>Contato</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-content">
+      <div class="hero-tag">Especialista em Dados &amp; Automação</div>
+      <h1 class="hero-title">
+        Transformo dados em<br>
+        <span class="gr">decisões lucrativas</span>
+      </h1>
+      <p class="hero-sub">
+        Automatizo processos, elimino gargalos e crio dashboards que mostram exatamente onde aumentar lucro e produtividade — com Python, Power BI e Excel.
+      </p>
+      <div class="hero-actions">
+        <a href="https://wa.me/5581996458010" target="_blank" rel="noopener noreferrer" class="btn-primary">
+          Quero automatizar minha empresa →
+        </a>
+        <a href="#dashboard" class="btn-secondary">Ver dashboards</a>
+      </div>
+      <div class="hero-stats">
+        <div><div class="stat-num">+320%</div><div class="stat-label">Velocidade relatórios</div></div>
+        <div><div class="stat-num">−85%</div><div class="stat-label">Tempo manual</div></div>
+        <div><div class="stat-num">R$+</div><div class="stat-label">Economia</div></div>
+        <div><div class="stat-num">100%</div><div class="stat-label">Satisfação</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-ind"><div class="scroll-line"></div><span>Role para Baixo</span></div>
+</div>
+
+<!-- SERVICES -->
+<section class="section" id="servicos">
+  <div class="wrap">
+    <div class="section-label">O que eu faço</div>
+    <h2 class="section-title">Soluções em dados do diagnóstico à entrega</h2>
+    <p class="section-desc">Cada solução é construída para o seu negócio, com foco em resultado mensurável.</p>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">🐍</div>
+        <h3>Automação com Python</h3>
+        <p>Scripts e sistemas que eliminam trabalho manual repetitivo. Integração com APIs, bancos de dados, e-mail, planilhas e ERPs.</p>
+        <div class="service-tags">
+          <span class="tag">Pandas</span><span class="tag">Selenium</span>
+          <span class="tag">APIs REST</span><span class="tag">ETL</span>
+        </div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">📊</div>
+        <h3>Dashboards em Power BI</h3>
+        <p>Painéis interativos com KPIs estratégicos. Conexão com múltiplas fontes de dados e atualização automática.</p>
+        <div class="service-tags">
+          <span class="tag">DAX</span><span class="tag">Power Query</span>
+          <span class="tag">Modelagem</span><span class="tag">RLS</span>
+        </div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">⚡</div>
+        <h3>Automação Excel &amp; VBA</h3>
+        <p>Planilhas inteligentes com macros, formulários automatizados e relatórios que se atualizam com um clique.</p>
+        <div class="service-tags">
+          <span class="tag">VBA</span><span class="tag">Power Query</span>
+          <span class="tag">Macros</span><span class="tag">Formulários</span>
+        </div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🎯</div>
+        <h3>Análise &amp; Gestão de Dados</h3>
+        <p>Identifico padrões, gargalos e oportunidades escondidas nos seus dados. Relatórios claros para decisões rápidas.</p>
+        <div class="service-tags">
+          <span class="tag">KPIs</span><span class="tag">Insights</span>
+          <span class="tag">SQL</span><span class="tag">Data Viz</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<div class="dash-section" id="dashboard">
+  <div class="wrap">
+    <div class="dash-header">
+      <div>
+        <div class="section-label">Simulação ao vivo</div>
+        <h2 class="section-title" style="font-size:clamp(1.6rem,3vw,2.2rem)">Dashboard Executivo</h2>
+        <p style="color:var(--muted);font-size:.8rem;margin-top:6px">Exemplo de painel estratégico entregue aos clientes</p>
+      </div>
+      <div class="live-badge"><div class="live-dot"></div>Dados em tempo real</div>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">Receita Total</div>
+        <div class="kpi-value" id="kpi-receita">R$ 0</div>
+        <div class="kpi-change up" id="kpi-rc">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Novos Clientes</div>
+        <div class="kpi-value" id="kpi-clientes">0</div>
+        <div class="kpi-change up" id="kpi-cc">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Taxa de Conversão</div>
+        <div class="kpi-value" id="kpi-conv">0%</div>
+        <div class="kpi-change down" id="kpi-conv-c">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Ticket Médio</div>
+        <div class="kpi-value" id="kpi-ticket">R$ 0</div>
+        <div class="kpi-change up" id="kpi-tc">—</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-widget">
+        <h4>Receita vs Meta Mensal</h4>
+        <p class="chart-desc">Performance mensal comparada à meta</p>
+        <div class="chart-wrap" style="height:260px"><canvas id="chartBar"></canvas></div>
+      </div>
+      <div class="chart-widget">
+        <h4>Mix de Receita</h4>
+        <p class="chart-desc">Distribuição por serviço</p>
+        <div class="chart-wrap" style="height:260px"><canvas id="chartDoughnut"></canvas></div>
+      </div>
+    </div>
+
+    <div class="charts-grid" style="margin-top:2px">
+      <div class="chart-widget">
+        <h4>Tendência de Produtividade</h4>
+        <p class="chart-desc">Horas economizadas por automação (semanas)</p>
+        <div class="chart-wrap" style="height:200px"><canvas id="chartLine"></canvas></div>
+      </div>
+      <div class="table-widget">
+        <h4>Top Projetos do Mês</h4>
+        <table class="mini-table">
+          <thead><tr><th>Projeto</th><th>Tipo</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Dashboard Vendas</td><td style="color:var(--muted);font-size:.74rem">Power BI</td><td><span class="badge green">Entregue</span></td></tr>
+            <tr><td>Bot Financeiro</td><td style="color:var(--muted);font-size:.74rem">Python</td><td><span class="badge green">Entregue</span></td></tr>
+            <tr><td>Relatório Logística</td><td style="color:var(--muted);font-size:.74rem">VBA</td><td><span class="badge yellow">Andamento</span></td></tr>
+            <tr><td>ETL Dados ERP</td><td style="color:var(--muted);font-size:.74rem">Python</td><td><span class="badge yellow">Andamento</span></td></tr>
+            <tr><td>KPI Operacional</td><td style="color:var(--muted);font-size:.74rem">Power BI</td><td><span class="badge green">Entregue</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROCESSO -->
+<section class="section" id="processo">
+  <div class="wrap">
+    <div class="section-label">Como trabalho</div>
+    <h2 class="section-title">Do diagnóstico ao resultado em 4 etapas</h2>
+    <div class="process-list">
+      <div class="process-item">
+        <div class="process-num">01</div>
+        <div><h3>Diagnóstico do negócio</h3><p>Entendo seus processos, gargalos e objetivos para mapear onde os dados podem gerar mais valor.</p></div>
+        <div class="process-icon">🔍</div>
+      </div>
+      <div class="process-item">
+        <div class="process-num">02</div>
+        <div><h3>Estruturação dos dados</h3><p>Organizo, limpo e modelo os dados para que sirvam como base confiável para análise e automação.</p></div>
+        <div class="process-icon">🏗️</div>
+      </div>
+      <div class="process-item">
+        <div class="process-num">03</div>
+        <div><h3>Desenvolvimento da solução</h3><p>Construo o dashboard, automação ou relatório com foco em usabilidade e performance.</p></div>
+        <div class="process-icon">⚙️</div>
+      </div>
+      <div class="process-item">
+        <div class="process-num">04</div>
+        <div><h3>Entrega e suporte</h3><p>Apresento a solução, treino sua equipe e ofereço suporte para garantir adoção e resultado contínuo.</p></div>
+        <div class="process-icon">🚀</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section class="section" id="resultados">
+  <div class="wrap">
+    <div class="section-label">Resultados comprovados</div>
+    <h2 class="section-title">Impacto baseado em dados reais</h2>
+
+    <div class="results-grid">
+
+      <div class="result-card">
+        <div class="result-number">3x +</div>
+        <div class="result-label">
+          Ganho de produtividade com automação de processos e análise de dados.
+          <br>
+          <small>
+            
+            <a href="https://bit.ly/4bCe9xi" target="_blank" rel="noopener noreferrer">
+              SEBRAE – Análise de dados, maior resultados
+            </a>
+          </small>
+        </div>
+      </div>
+
+      <div class="result-card">
+        <div class="result-number">-60%</div>
+        <div class="result-label">
+          Redução de tempo em tarefas operacionais com automação.
+          <br>
+          <small>
+            
+            <a href="https://bit.ly/4sTghYf" target="_blank" rel="noopener noreferrer">
+              Carta Capital – Automação e eficiência
+            </a>
+          </small>
+        </div>
+      </div>
+
+      <div class="result-card">
+        <div class="result-number">+Competição</div>
+        <div class="result-label">
+          Empresas digitalizadas reduzem custos e aumentam eficiência operacional.
+          <br>
+          <small>
+            
+            <a href="https://bit.ly/4bnRzIo" target="_blank" rel="noopener noreferrer">
+              PWC – Transformação & Competitividade
+            </a>
+          </small>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<div class="testimonial-section">
+  <div class="wrap">
+    <div class="section-label">Clientes</div>
+    <h2 class="section-title">Quem já transformou seus dados</h2>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">O Everton entregou um dashboard que mudou como nossa equipe toma decisões. Em duas semanas, identificamos desperdícios que custavam R$8k por mês.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">CF</div>
+          <div><div class="author-name">Carlos F.</div><div class="author-role">Diretor Comercial — Distribuidora</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">A automação em VBA que ele criou economiza 6 horas por semana do meu time. O retorno do investimento veio no primeiro mês.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">PM</div>
+          <div><div class="author-name">Patricia M.</div><div class="author-role">Gerente Financeira — Construtora</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">Profissional sério, entrega rápida e suporte excepcional. O Power BI ficou exatamente como precisávamos. Recomendo sem hesitar.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">RL</div>
+          <div><div class="author-name">Rodrigo L.</div><div class="author-role">CEO — Startup de Logística</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="wrap">
+    <div class="section-label">Próximo passo</div>
+    <h2 class="section-title">Pronto para tomar decisões com dados?</h2>
+    <p class="section-desc">Me conta sobre o seu negócio. Em 24h te mostro como posso ajudar a aumentar lucro e produtividade.</p>
+    <div class="cta-actions">
+      <a href="https://wa.me/5581996458010" target="_blank" rel="noopener noreferrer" class="btn-primary">Falar com Everton →</a>
+      <a href="mailto:everton.sst@gmail.com" class="btn-secondary">Enviar e-mail</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">Ever<span>Data</span></div>
+    <div class="footer-copy">© 2026 Everton Sacramento. Todos os direitos reservados.</div>
+    <div class="footer-links">
+      <a href="#servicos">Serviços</a>
+      <a href="#dashboard">Dashboard</a>
+      <a href="https://wa.me/5581996458010" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── KPI counter ──
+function animateVal(el, end, dur, pre='', suf='', dec=0) {
+  const t0 = performance.now();
+  (function tick(now) {
+    const p = Math.min((now - t0) / dur, 1);
+    const v = end * (1 - Math.pow(1 - p, 3));
+    el.textContent = pre + (dec ? v.toFixed(dec) : Math.round(v).toLocaleString('pt-BR')) + suf;
+    if (p < 1) requestAnimationFrame(tick);
+  })(t0);
+}
+
+new IntersectionObserver((entries, obs) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    animateVal(document.getElementById('kpi-receita'), 284500, 1800, 'R$ ');
+    animateVal(document.getElementById('kpi-clientes'), 47, 1400);
+    animateVal(document.getElementById('kpi-conv'), 23.4, 1600, '', '%', 1);
+    animateVal(document.getElementById('kpi-ticket'), 6050, 1800, 'R$ ');
+    document.getElementById('kpi-rc').textContent     = '↑ +18.4% vs mês anterior';
+    document.getElementById('kpi-cc').textContent     = '↑ +12 novos clientes';
+    document.getElementById('kpi-conv-c').textContent = '↓ −1.2% vs semana passada';
+    document.getElementById('kpi-tc').textContent     = '↑ +R$320 vs média';
+    obs.disconnect();
+  });
+}, { threshold: 0.15 }).observe(document.querySelector('.kpi-row'));
+
+// ── Bottom nav active highlight ──
+const allSections = document.querySelectorAll('[id]');
+const navAs = document.querySelectorAll('.bottom-nav a');
+window.addEventListener('scroll', () => {
+  let cur = 'top';
+  allSections.forEach(s => { if (window.scrollY >= s.offsetTop - 130) cur = s.id; });
+  navAs.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+  });
+}, { passive: true });
+
+// ── Chart defaults ──
+Chart.defaults.color = '#5a7090';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.04)';
+Chart.defaults.font.family = "'Manrope', sans-serif";
+Chart.defaults.font.size = 11;
+
+// Bar
+new Chart(document.getElementById('chartBar'), {
+  type: 'bar',
+  data: {
+    labels: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago'],
+    datasets: [
+      { label: 'Receita (k)', data: [182,215,198,260,244,310,285,340],
+        backgroundColor: 'rgba(0,212,255,0.7)', borderRadius: 6, borderSkipped: false },
+      { label: 'Meta (k)', data: [200,200,220,240,260,280,300,320],
+        type: 'line', borderColor: 'rgba(0,255,179,0.7)',
+        backgroundColor: 'transparent', pointRadius: 3,
+        pointBackgroundColor: 'rgba(0,255,179,1)',
+        borderWidth: 2, borderDash: [4,4], tension: 0.4 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 10, padding: 14 } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { grid: { color: 'rgba(255,255,255,0.04)' } }
+    }
+  }
+});
+
+// Doughnut
+new Chart(document.getElementById('chartDoughnut'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Power BI','Python','Excel/VBA','Analytics'],
+    datasets: [{
+      data: [38,31,20,11],
+      backgroundColor: ['rgba(0,212,255,.85)','rgba(0,87,255,.85)','rgba(0,255,179,.85)','rgba(255,200,80,.85)'],
+      borderColor: '#030508', borderWidth: 3, hoverOffset: 8
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, cutout: '68%',
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 12 } } }
+  }
+});
+
+// Line
+const ctx = document.getElementById('chartLine').getContext('2d');
+const g = ctx.createLinearGradient(0,0,0,180);
+g.addColorStop(0,'rgba(0,212,255,0.25)');
+g.addColorStop(1,'rgba(0,212,255,0)');
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12'],
+    datasets: [{
+      label: 'Horas economizadas',
+      data: [12,18,22,19,30,28,35,40,38,50,48,58],
+      borderColor: 'rgba(0,212,255,1)', backgroundColor: g,
+      borderWidth: 2, fill: true, tension: 0.4,
+      pointRadius: 3, pointBackgroundColor: 'rgba(0,212,255,1)'
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { grid: { color: 'rgba(255,255,255,0.04)' } }
+    }
+  }
+});
+</script>
+</body>
+</html>
